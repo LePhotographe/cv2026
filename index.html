@@ -355,6 +355,8 @@ hr.xp { border: 0; border-top: 1px solid #aca899; border-bottom: 1px solid #fff;
 .mg-card-b th, .mg-card-b td { padding: 2px 6px; text-align: center; border-bottom: 1px solid #e8e6dc; }
 .mg-card-b th { font-weight: normal; background: linear-gradient(180deg, #fff, #ebe9de); }
 .mg-card-b td:nth-child(2), .mg-card-b th:nth-child(2) { text-align: left; }
+.mg-card-b table.mg-sc { font-size: 10px; } .mg-sc th, .mg-sc td { padding: 2px 3px; } .mg-sc td:first-child, .mg-sc th:first-child { text-align: left; }
+.mg-card-b .mg-sc td:nth-child(2), .mg-card-b .mg-sc th:nth-child(2) { text-align: center; }
 .mg-big { font: 700 22px var(--xp-ui); color: #1d3f8f; text-align: center; padding: 4px 0; }
 
 
@@ -2064,7 +2066,41 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
       poly: rect(40, 60, 560, 340), tee: [80, 200], cup: [510, 200],
       blocks: [[300, 100, 360, 180], [300, 220, 360, 300]], house: [300, 100, 360, 300], mill: { x: 322, y: 200, r0: 6, r1: 44, w: 1.1, a0: 0.4, face: 300, bw: 3.5 } }
   ];
-  const PAR = HOLES.reduce((t, h) => t + h.par, 0);
+  // Trous bonus : « continuer à jouer » après les 4 trous du parcours
+  const BONUS = 'Trou bonus', bump = (x, y, r) => ({ x, y, r: r || 15 });
+  HOLES.push(
+    { par: 2, title: 'Le Couloir', aim: 0, poly: rect(40, 140, 560, 260), tee: [90, 200], cup: [510, 200],
+      walls: [[260, 140, 260, 182], [260, 218, 260, 260], [380, 140, 380, 168], [380, 232, 380, 260]] },
+    { par: 3, title: 'Le Zigzag', aim: Math.PI / 2, poly: rect(40, 60, 560, 340), tee: [110, 110], cup: [500, 290],
+      walls: [[200, 60, 200, 255], [400, 145, 400, 340]] },
+    { par: 3, title: 'L’Île', aim: 0, poly: rect(40, 60, 560, 340), tee: [80, 200], cup: [520, 200],
+      water: [{ x: 300, y: 200, rx: 120, ry: 72 }] },
+    { par: 3, title: 'Le Flipper', aim: 0, poly: rect(40, 80, 560, 320), tee: [80, 200], cup: [520, 200],
+      bumpers: [bump(200, 150), bump(200, 250), bump(300, 200), bump(300, 112), bump(300, 288), bump(400, 150), bump(400, 250)] },
+    { par: 2, title: 'La Pente', aim: 0, poly: rect(40, 100, 560, 300), tee: [90, 250], cup: [510, 150],
+      slopes: [{ x0: 180, y0: 100, x1: 420, y1: 300, ax: 0, ay: 170 }] },
+    { par: 3, title: 'Le Dogleg', aim: 0, poly: [[40, 60], [560, 60], [560, 340], [390, 340], [390, 190], [40, 190]], tee: [90, 125], cup: [475, 295],
+      sand: [{ x: 505, y: 105, rx: 36, ry: 24 }] },
+    { par: 3, title: 'Les Navettes', aim: 0, poly: rect(40, 80, 560, 320), tee: [80, 200], cup: [520, 200],
+      movers: [{ x: 240, y: 200, dx: 0, dy: 82, w: 1.6, ph: 0, r: 18 }, { x: 380, y: 200, dx: 0, dy: 82, w: 1.6, ph: Math.PI, r: 18 }] },
+    { par: 3, title: 'Le Fer à cheval', aim: 0, poly: [[40, 60], [560, 60], [560, 340], [40, 340], [40, 240], [440, 240], [440, 160], [40, 160]], tee: [90, 110], cup: [90, 290] },
+    { par: 3, title: 'Le Bunker', aim: 0, poly: rect(40, 80, 560, 320), tee: [80, 200], cup: [520, 200],
+      sand: [{ x: 300, y: 200, rx: 110, ry: 62 }, { x: 470, y: 125, rx: 40, ry: 24 }, { x: 470, y: 275, rx: 40, ry: 24 }] },
+    { par: 3, title: 'Les Étangs', aim: 0, poly: rect(40, 60, 560, 340), tee: [80, 200], cup: [520, 110],
+      water: [{ x: 220, y: 128, rx: 58, ry: 38 }, { x: 220, y: 272, rx: 58, ry: 38 }, { x: 400, y: 205, rx: 52, ry: 44 }] },
+    { par: 4, title: 'La Chicane', aim: Math.PI / 2, poly: rect(40, 60, 560, 340), tee: [100, 110], cup: [510, 110],
+      walls: [[180, 60, 180, 255], [310, 145, 310, 340], [440, 60, 440, 255]] },
+    { par: 3, title: 'Les Vallons', aim: 0.5, poly: rect(40, 60, 560, 340), tee: [80, 110], cup: [520, 290],
+      slopes: [{ x0: 40, y0: 60, x1: 300, y1: 340, ax: 0, ay: 140 }, { x0: 300, y0: 60, x1: 560, y1: 340, ax: 0, ay: -140 }], bumpers: [bump(300, 200, 18)] },
+    { par: 3, title: 'Le Losange', aim: 0, poly: [[300, 50], [560, 200], [300, 350], [40, 200]], tee: [90, 200], cup: [510, 200],
+      bumpers: [bump(300, 200, 22)] },
+    { par: 4, title: 'Le Grand Final', aim: Math.PI / 2, poly: rect(40, 60, 560, 340), tee: [100, 110], cup: [520, 300],
+      walls: [[200, 60, 200, 260], [400, 140, 400, 340]], water: [{ x: 300, y: 292, rx: 56, ry: 32 }],
+      movers: [{ x: 480, y: 215, dx: 0, dy: 70, w: 1.3, ph: 0, r: 16 }] }
+  );
+  HOLES.forEach((H, i) => { H.n = i + 1; if (i >= 4) { H.bonus = true; H.era = BONUS; } });
+  const CAREER = 4, PAR = HOLES.slice(0, CAREER).reduce((t, h) => t + h.par, 0), PAR18 = HOLES.reduce((t, h) => t + h.par, 0);
+  const lastHole = () => (S.course === 'full' ? HOLES.length : CAREER) - 1;
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* ignoré */ } } };
   const relTxt = r => (r === 0 ? 'Par' : (r > 0 ? '+' : '−') + Math.abs(r));
 
@@ -2120,6 +2156,17 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny;
     return -vn;
   }
+  function moverAt(m, t) { const a = m.w * t + m.ph, s = Math.sin(a), c = Math.cos(a) * m.w; return { x: m.x + m.dx * s, y: m.y + m.dy * s, vx: m.dx * c, vy: m.dy * c, r: m.r }; }
+  function collideMover(b, c, e) {
+    const dx = b.x - c.x, dy = b.y - c.y, d = Math.hypot(dx, dy), min = R + c.r;
+    if (d >= min || d < 1e-6) return 0;
+    const nx = dx / d, ny = dy / d;
+    b.x = c.x + nx * min; b.y = c.y + ny * min;
+    const vn = (b.vx - c.vx) * nx + (b.vy - c.vy) * ny;
+    if (vn >= 0) return 0;
+    b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny;
+    return -vn;
+  }
   function collideCircle(b, c, e) {
     const dx = b.x - c.x, dy = b.y - c.y, d = Math.hypot(dx, dy), min = R + c.r;
     if (d >= min || d < 1e-6) return 0;
@@ -2160,6 +2207,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
       b.vx -= dx / dc * 1400 * h; b.vy -= dy / dc * 1400 * h;
       b.vx *= 1 - 1.2 * h; b.vy *= 1 - 1.2 * h;
     } else if (dc < CUP + 4 && sp < 160) { b.vx += dx / dc * 800 * h; b.vy += dy / dc * 800 * h; }
+    for (const z of H.slopes || []) if (b.x > z.x0 && b.x < z.x1 && b.y > z.y0 && b.y < z.y1) { b.vx += z.ax * h; b.vy += z.ay * h; }
     b.x += b.vx * h; b.y += b.vy * h;
     let hit = 0;
     for (const s of H.segs) hit = Math.max(hit, collideSeg(b, s, 0.7, 0, null));
@@ -2167,7 +2215,9 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
       const m = H.mill, vel = (px, py) => [-m.w * (py - m.y), m.w * (px - m.x)];
       for (const s of bladeSegs(m, time)) hit = Math.max(hit, collideSeg(b, s, 0.55, m.bw, vel));
     }
+    for (const w of H.walls || []) hit = Math.max(hit, collideSeg(b, w, 0.7, 4, null));
     if (hit > 25) sfx('bump', hit);
+    for (const m of H.movers || []) { const v = collideMover(b, moverAt(m, time), 0.9); if (v > 15) { m.hit = time; sfx('boing', v); } }
     for (const c of H.bumpers || []) { const v = collideCircle(b, c, 0.95); if (v > 15) { c.hit = S.time; sfx('boing', v); } }
     for (const w of H.water || []) if (inEll(b.x, b.y, w, 0.8)) { splashStart(b.x, b.y); return; }
   }
@@ -2176,15 +2226,15 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   function startHole(i) {
     const H = HOLES[i];
     S.hole = i; S.strokes = 0;
-    (H.bumpers || []).forEach(b => { b.hit = 0; });
+    (H.bumpers || []).forEach(b => { b.hit = 0; }); (H.movers || []).forEach(m => { m.hit = 0; });
     S.ball = { x: H.tee[0], y: H.tee[1], vx: 0, vy: 0, vis: true, sc: 1, al: 1 };
     S.rest = { x: H.tee[0], y: H.tee[1] };
     S.aim = { ang: H.aim, pow: 0.5, show: false };
     S.mode = 'aim'; S.drag = null; S.splash = null; S.sink = null; S.cache = null;
-    S.banner = { t0: S.time, dur: 2.8, big: 'Trou ' + H.n + ' · Par ' + H.par, small: H.title + ' (' + H.era + ')', kind: 'intro' };
+    S.banner = { t0: S.time, dur: 2.8, big: 'Trou ' + H.n + ' · Par ' + H.par, small: H.bonus ? H.title : H.title + ' (' + H.era + ')', kind: 'intro' };
     status();
   }
-  function newGame() { closeCard(); S.scores = []; S.mullUsed = false; startHole(0); }
+  function newGame(full) { closeCard(); S.scores = []; S.mullUsed = false; S.course = full ? 'full' : 'career'; startHole(0); }
   const sp25 = () => { try { return localStorage.getItem('ac.sp25') === '1'; } catch (e) { return false; } };
   const canMull = () => sp25() && !S.mullUsed && S.mode === 'aim' && S.prev && S.prev.hole === S.hole;
   function mulligan() {
@@ -2231,9 +2281,9 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     const hole = S.hole;
     setTimeout(() => {
       if (!S.alive || S.mode !== 'done' || S.hole !== hole) return;
-      const t = totals(), last = hole === HOLES.length - 1, next = HOLES[hole + 1];
+      const t = totals(), last = hole === lastHole(), next = last ? null : HOLES[hole + 1];
       card('Trou ' + H.n + ' terminé', '<h3>' + T(name) + '</h3><p>' + S.strokes + (S.strokes > 1 ? ' coups' : ' coup') + ' · Par ' + H.par + ' · Total : ' + t.sc + ' (' + relTxt(t.rel) + ')</p>' +
-        (next ? '<p>' + T('Prochain trou : ' + next.title + ' (' + next.era + ')') + '</p>' : ''), [[last ? 'end' : 'next', last ? 'Carte de score' : 'Trou suivant', true]]);
+        (next ? '<p>' + T('Prochain trou : ' + next.title + (next.bonus ? ' (par ' + next.par + ')' : ' (' + next.era + ')')) + '</p>' : ''), [[last ? 'end' : 'next', last ? 'Carte de score' : 'Trou suivant', true]]);
     }, 1100);
   }
   function totals() {
@@ -2241,23 +2291,38 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     S.scores.forEach((v, i) => { if (v != null) { sc += v; par += HOLES[i].par; } });
     return { sc, par, rel: sc - par };
   }
+  function verdictOf(rel) { return rel < 0 ? 'Sous le par : joli parcours !' : rel === 0 ? 'Dans le par. Solide.' : relTxt(rel) + ' au-dessus du par. Une revanche ?'; }
+  function record(key, sc) { const best = parseInt(store.get(key), 10) || 0, rec = !best || sc < best; if (rec) store.set(key, String(sc)); return { best, rec }; }
   function endCard() {
     S.mode = 'end';
-    const t = totals(), best = parseInt(store.get('ac.mg.best'), 10) || 0, rec = !best || t.sc < best;
-    if (rec) store.set('ac.mg.best', String(t.sc));
-    const verdict = t.rel < 0 ? 'Sous le par : joli parcours !' : t.rel === 0 ? 'Dans le par. Solide.' : relTxt(t.rel) + ' au-dessus du par. Une revanche ?';
+    if (S.course === 'full') return endCard18();
+    const t = totals(), r = record('ac.mg.best', t.sc);
     card('Carte de score', '<table><thead><tr><th>Trou</th><th>Étape</th><th>Par</th><th>Coups</th></tr></thead><tbody>' +
-      HOLES.map((H, i) => '<tr><td>' + H.n + '</td><td>' + T(H.title) + '</td><td>' + H.par + '</td><td>' + S.scores[i] + '</td></tr>').join('') +
+      HOLES.slice(0, CAREER).map((H, i) => '<tr><td>' + H.n + '</td><td>' + T(H.title) + '</td><td>' + H.par + '</td><td>' + S.scores[i] + '</td></tr>').join('') +
       '<tr class="tot"><td></td><td>Total</td><td>' + PAR + '</td><td>' + t.sc + '</td></tr></tbody></table>' +
-      '<p class="mg-big">' + t.sc + ' coups (' + relTxt(t.rel) + ')</p><p>' + T(verdict) + ' ' + T(rec ? 'Nouveau record sur ce poste !' : 'Record sur ce poste : ' + best + ' coups.') + '</p>',
-      [['mail', 'Envoyer mon score à Arthur', true], ['again', 'Rejouer'], ['quit', 'Fermer']]);
+      '<p class="mg-big">' + t.sc + ' coups (' + relTxt(t.rel) + ')</p><p>' + T(verdictOf(t.rel)) + ' ' + T(r.rec ? 'Nouveau record sur ce poste !' : 'Record sur ce poste : ' + r.best + ' coups.') + '</p>' +
+      '<p>' + T('Envie de prolonger ? 14 trous bonus vous attendent pour finir un vrai parcours de 18 trous.') + '</p>',
+      [['more', 'Continuer à jouer', true], ['mail', 'Envoyer mon score à Arthur'], ['again', 'Rejouer'], ['quit', 'Fermer']]);
     Sfx.chime();
   }
+  function endCard18() {
+    const t = totals(), r = record('ac.mg.best18', t.sc);
+    const half = (a, b, lab) => {
+      const hs = HOLES.slice(a, b), sum = f => hs.reduce((n, H, i) => n + f(H, a + i), 0);
+      return '<table class="mg-sc"><thead><tr><th>' + lab + '</th>' + hs.map(H => '<th>' + H.n + '</th>').join('') + '<th>Tot.</th></tr></thead><tbody>' +
+        '<tr><td>Par</td>' + hs.map(H => '<td>' + H.par + '</td>').join('') + '<td>' + sum(H => H.par) + '</td></tr>' +
+        '<tr class="tot"><td>Coups</td>' + hs.map((H, i) => '<td>' + S.scores[a + i] + '</td>').join('') + '<td>' + sum((H, i) => S.scores[i]) + '</td></tr></tbody></table>';
+    };
+    card('Carte de score · 18 trous', half(0, 9, 'Aller') + half(9, 18, 'Retour') +
+      '<p class="mg-big">' + t.sc + ' coups (' + relTxt(t.rel) + ')</p><p>' + T('Par du parcours : ' + PAR18 + '. ' + verdictOf(t.rel) + ' ') + T(r.rec ? 'Nouveau record sur ce poste !' : 'Record sur ce poste : ' + r.best + ' coups.') + '</p>',
+      [['mail', 'Envoyer mon score à Arthur', true], ['again', 'Rejouer'], ['quit', 'Fermer']]);
+    Sfx.chime(); Sfx.applause(0.5);
+  }
   function scoreMail() {
-    const t = totals();
-    const detail = HOLES.map((H, i) => 'Trou ' + H.n + ' (' + H.title + ', par ' + H.par + ') : ' + S.scores[i]).join('\n');
+    const t = totals(), n = S.course === 'full' ? HOLES.length : CAREER;
+    const detail = HOLES.slice(0, n).map((H, i) => 'Trou ' + H.n + ' (' + H.title + ', par ' + H.par + ') : ' + S.scores[i]).join('\n');
     X.apps.compose({ subject: 'Mon score au mini-golf : ' + t.sc + ' coups (' + relTxt(t.rel) + ')',
-      body: 'Bonjour Arthur,\n\nJe viens de terminer le mini-golf de votre bureau en ' + t.sc + ' coups (' + relTxt(t.rel) + ').\n\n' + detail + '\n\nJ’aimerais aussi échanger avec vous au sujet d’un poste chez [entreprise].\n\nBien cordialement,\n[Prénom Nom]' });
+      body: 'Bonjour Arthur,\n\nJe viens de terminer ' + (n === CAREER ? 'le mini-golf de votre bureau' : 'les 18 trous du mini-golf de votre bureau') + ' en ' + t.sc + ' coups (' + relTxt(t.rel) + ').\n\n' + detail + '\n\nJ’aimerais aussi échanger avec vous au sujet d’un poste chez [entreprise].\n\nBien cordialement,\n[Prénom Nom]' });
   }
 
   /* ---------- Boucle ---------- */
@@ -2336,6 +2401,32 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     c.fillStyle = '#f2e9d6';
     for (let y = y0 + 2.5; y + 3 <= y1 - 1.5; y += 6) { c.fillRect(x0 + 1.5, y, 2.5, 3); c.fillRect(x1 - 4, y, 2.5, 3); }
   }
+  function slope(c, z) {
+    c.save(); c.beginPath(); c.rect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); c.clip();
+    const a = Math.atan2(z.ay, z.ax), g = c.createLinearGradient(z.x0 + (z.x1 - z.x0) / 2 - Math.cos(a) * 140, z.y0 + (z.y1 - z.y0) / 2 - Math.sin(a) * 140, z.x0 + (z.x1 - z.x0) / 2 + Math.cos(a) * 140, z.y0 + (z.y1 - z.y0) / 2 + Math.sin(a) * 140);
+    g.addColorStop(0, 'rgba(255,255,255,.10)'); g.addColorStop(1, 'rgba(0,40,0,.16)');
+    c.fillStyle = g; c.fillRect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0);
+    c.strokeStyle = 'rgba(255,255,255,.38)'; c.lineWidth = 2; c.lineCap = 'round'; c.lineJoin = 'round';
+    for (let y = z.y0 + 30; y < z.y1; y += 50) for (let x = z.x0 + 30; x < z.x1; x += 50) {
+      c.save(); c.translate(x, y); c.rotate(a); c.beginPath(); c.moveTo(-5, -7); c.lineTo(3, 0); c.lineTo(-5, 7); c.stroke(); c.restore();
+    }
+    c.restore();
+  }
+  function wall(c, w) {
+    c.lineCap = 'round';
+    const line = (col, lw, o) => { c.strokeStyle = col; c.lineWidth = lw; c.beginPath(); c.moveTo(w[0] + o, w[1] + o); c.lineTo(w[2] + o, w[3] + o); c.stroke(); };
+    line('rgba(0,0,0,.3)', 9, 2.5); line('#4e2c0f', 9, 0); line('#a8713a', 6, 0); line('#cf9f60', 2, -1);
+  }
+  function mover(c, m, t) {
+    const p = moverAt(m, t);
+    c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.arc(p.x + 2.5, p.y + 3, m.r, 0, TAU); c.fill();
+    const g = c.createRadialGradient(p.x - m.r * 0.35, p.y - m.r * 0.4, 1, p.x, p.y, m.r);
+    g.addColorStop(0, '#ffb39c'); g.addColorStop(0.55, '#e0412a'); g.addColorStop(1, '#8e1c10');
+    c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, m.r, 0, TAU); c.fill();
+    c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.beginPath(); c.arc(p.x, p.y, m.r - 5, 0, TAU); c.stroke();
+    const k = m.hit ? (t - m.hit) / 0.3 : 1;
+    if (k >= 0 && k < 1) { c.strokeStyle = 'rgba(255,255,255,' + (1 - k).toFixed(2) + ')'; c.lineWidth = 2; c.beginPath(); c.arc(p.x, p.y, m.r + 2 + k * 6, 0, TAU); c.stroke(); }
+  }
   function drawStatic(c, H) {
     c.fillStyle = '#2c6824'; c.fillRect(0, 0, 600, 400);
     c.fillStyle = 'rgba(0,0,0,.07)';
@@ -2365,6 +2456,9 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     c.fillStyle = '#3e8c31'; c.fillRect(-14, -12, 28, 24); c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1; c.strokeRect(-13.5, -11.5, 27, 23);
     c.restore();
     [1, -1].forEach(sg => { c.fillStyle = '#fff'; c.beginPath(); c.arc(tx + px * 18 * sg, ty + py * 18 * sg, 2.6, 0, TAU); c.fill(); c.strokeStyle = 'rgba(0,0,0,.35)'; c.stroke(); });
+    (H.slopes || []).forEach(z => slope(c, z));
+    (H.movers || []).forEach(m => { c.strokeStyle = 'rgba(0,40,0,.22)'; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(m.x - m.dx, m.y - m.dy); c.lineTo(m.x + m.dx, m.y + m.dy); c.stroke(); });
+    (H.walls || []).forEach(w => wall(c, w));
     if (H.film) H.blocks.forEach(b => film(c, b));
     // Trou
     const [cx, cy] = H.cup;
@@ -2514,6 +2608,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     c.drawImage(staticLayer(H), 0, 0, 600, 400);
     (H.water || []).forEach(w => water(c, w, t));
     (H.bumpers || []).forEach(b => { if (b.hit && t - b.hit < 0.3) lens(c, b); });
+    (H.movers || []).forEach(m => mover(c, m, t));
     ball(c);
     splashFx(c);
     if (H.mill) house(c, H, t);
@@ -2537,7 +2632,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   function status() {
     if (!S.W) return;
     const H = HOLE(), t = totals(), b = S.W.body;
-    $('.mg-h', b).textContent = 'Trou ' + H.n + ' sur ' + HOLES.length + ' · Par ' + H.par;
+    $('.mg-h', b).textContent = 'Trou ' + H.n + ' sur ' + (lastHole() + 1) + ' · Par ' + H.par + (H.bonus ? ' · ' + H.title : '');
     $('.mg-s', b).textContent = 'Coups : ' + S.strokes;
     $('.mg-t', b).textContent = 'Total : ' + (t.sc + (S.scores[S.hole] == null ? S.strokes : 0)) + ' (' + relTxt(t.rel) + ')';
     powUI();
@@ -2552,8 +2647,9 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   function startCard() {
     S.mode = 'intro';
     card('Mini-golf', '<h3>4 trous, un par étape de mon parcours</h3><table><thead><tr><th>Trou</th><th>Étape</th><th>Par</th></tr></thead><tbody>' +
-      HOLES.map(H => '<tr><td>' + H.n + '</td><td>' + T(H.title) + ' <small>(' + T(H.era) + ')</small></td><td>' + H.par + '</td></tr>').join('') + '</tbody></table>' +
-      '<p>' + T('Tirez en arrière pour viser, relâchez pour jouer. Au clavier : flèches pour viser et doser, Espace pour jouer.') + '</p>', [['play', 'Jouer', true]]);
+      HOLES.slice(0, CAREER).map(H => '<tr><td>' + H.n + '</td><td>' + T(H.title) + ' <small>(' + T(H.era) + ')</small></td><td>' + H.par + '</td></tr>').join('') + '</tbody></table>' +
+      '<p>' + T('Puis, si le cœur vous en dit, 14 trous bonus pour un parcours complet de 18 trous.') + '</p>' +
+      '<p>' + T('Tirez en arrière pour viser, relâchez pour jouer. Au clavier : flèches pour viser et doser, Espace pour jouer.') + '</p>', [['play', 'Jouer', true], ['play18', '18 trous d’un coup']]);
   }
   function howto() {
     msg({ id: 'mg-howto', title: 'Comment jouer', icon: 'help', w: 420, sound: false,
@@ -2563,13 +2659,14 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   }
   function aboutGame() {
     msg({ id: 'mg-about', title: 'À propos du mini-golf', icon: 'minigolf', w: 400, sound: false,
-      html: '<p><b>Mini-golf</b> · ' + HOLES.length + ' trous, par ' + PAR + '</p><p>' + T('Un trou par étape de mon parcours : ' + HOLES.map(h => h.title).join(', ') + '.') + '</p><p>' + T('Golfeur depuis 25 ans, il me fallait un parcours sur ce bureau. Dessiné et programmé pour ce CV.') + '</p>' });
+      html: '<p><b>Mini-golf</b> · ' + HOLES.length + ' trous, par ' + PAR18 + '</p><p>' + T('Les 4 premiers trous racontent mon parcours : ' + HOLES.slice(0, CAREER).map(h => h.title).join(', ') + '. Les 14 suivants sont là pour le plaisir.') + '</p><p>' + T('Golfeur depuis 25 ans, il me fallait un parcours sur ce bureau. Dessiné et programmé pour ce CV.') + '</p>' });
   }
   function bestDialog() {
-    const best = parseInt(store.get('ac.mg.best'), 10) || 0;
-    msg({ id: 'mg-best', title: 'Meilleur score', icon: 'minigolf', w: 340, sound: false,
-      html: best ? '<p>' + T('Meilleur score sur ce poste : ') + '<b>' + best + ' coups (' + relTxt(best - PAR) + ')</b></p><p>Par du parcours : ' + PAR + '.</p>' : '<p>' + T('Aucune partie terminée sur ce poste pour l’instant.') + '</p><p>Par du parcours : ' + PAR + '.</p>',
-      buttons: [{ id: 'reset', label: 'Effacer', disabled: !best }, { id: 'ok', label: 'OK', def: true }], onButton: b => { if (b === 'reset') store.set('ac.mg.best', null); } });
+    const best = parseInt(store.get('ac.mg.best'), 10) || 0, best18 = parseInt(store.get('ac.mg.best18'), 10) || 0;
+    const line = (lab, v, par) => '<p>' + T(lab + ' (par ' + par + ') : ') + (v ? '<b>' + v + ' coups (' + relTxt(v - par) + ')</b>' : T('pas encore de partie terminée')) + '</p>';
+    msg({ id: 'mg-best', title: 'Meilleurs scores', icon: 'minigolf', w: 360, sound: false,
+      html: '<p>' + T('Meilleurs scores sur ce poste :') + '</p>' + line('Parcours, 4 trous', best, PAR) + line('Parcours complet, 18 trous', best18, PAR18),
+      buttons: [{ id: 'reset', label: 'Effacer', disabled: !best && !best18 }, { id: 'ok', label: 'OK', def: true }], onButton: b => { if (b === 'reset') { store.set('ac.mg.best', null); store.set('ac.mg.best18', null); } } });
   }
   function act(cmd) {
     if (cmd === 'new') newGame();
@@ -2624,7 +2721,10 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     S.ov.addEventListener('click', e => {
       const b = e.target.closest('[data-g]'); if (!b) return;
       const g = b.dataset.g;
-      if (g === 'play' || g === 'again') newGame();
+      if (g === 'play') newGame();
+      else if (g === 'play18') newGame(true);
+      else if (g === 'again') newGame(S.course === 'full');
+      else if (g === 'more') { closeCard(); S.course = 'full'; startHole(CAREER); }
       else if (g === 'next') { closeCard(); startHole(S.hole + 1); }
       else if (g === 'end') endCard();
       else if (g === 'mail') scoreMail();
@@ -2635,13 +2735,13 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     if (WM.get('minigolf')) { WM.focus('minigolf'); return WM.get('minigolf'); }
     const html = '<div class="mg"><div class="mg-stage"><canvas class="mg-cv" tabindex="0" aria-label="' + esc('Parcours de mini-golf : tirez en arrière pour viser, relâchez pour jouer') + '"></canvas><div class="mg-ov"></div></div>' +
       '<div class="sbar"><span class="grow mg-h"></span><span class="mg-s"></span><span class="mg-t"></span><span class="mg-p"><em>Puissance</em><i class="mg-pow" aria-hidden="true"><b></b></i></span></div></div>';
-    Object.assign(S, { alive: true, paused: false, time: 0, sndT: 0, raf: 0, last: 0, hint: true, scores: [], cache: null, s: 0, mullUsed: false, prev: null });
+    Object.assign(S, { alive: true, paused: false, time: 0, sndT: 0, raf: 0, last: 0, hint: true, scores: [], cache: null, s: 0, mullUsed: false, prev: null, course: 'career' });
     const W = WM.create('minigolf', { title: 'Mini-golf', icon: 'minigolf', w: 606, h: 478, html, kind: 'game', hash: 'minigolf', minW: 300, minH: 240, focus: '.mg-cv',
       onClose: () => { S.alive = false; if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; if (S.ro) S.ro.disconnect(); S.W = null; S.cv = null; S.cache = null; },
       onMin: () => { S.paused = true; }, onRestore: () => { S.paused = false; kick(); }, onResize: () => layout() });
     S.W = W; S.cv = $('.mg-cv', W.body); S.ctx = S.cv.getContext('2d'); S.stage = $('.mg-stage', W.body); S.ov = $('.mg-ov', W.body);
     $('.mg', W.body).insertBefore(menubar([
-      { label: 'Partie', items: () => [{ id: 'new', label: 'Nouvelle partie', key: 'F2' }, { id: 'restart', label: 'Recommencer le trou', disabled: S.mode === 'intro' || S.mode === 'end' }, sp25() ? { id: 'mull', label: 'Mulligan', key: 'M', disabled: !canMull() } : null, { sep: true }, { id: 'sound', label: 'Effets sonores', checked: Sfx.enabled }, { sep: true }, { id: 'best', label: 'Meilleur score…' }, { sep: true }, { id: 'quit', label: 'Quitter' }] },
+      { label: 'Partie', items: () => [{ id: 'new', label: 'Nouvelle partie', key: 'F2' }, { id: 'restart', label: 'Recommencer le trou', disabled: S.mode === 'intro' || S.mode === 'end' }, sp25() ? { id: 'mull', label: 'Mulligan', key: 'M', disabled: !canMull() } : null, { sep: true }, { id: 'sound', label: 'Effets sonores', checked: Sfx.enabled }, { sep: true }, { id: 'best', label: 'Meilleurs scores…' }, { sep: true }, { id: 'quit', label: 'Quitter' }] },
       { label: '?', items: [{ id: 'howto', label: 'Comment jouer' }, { sep: true }, { id: 'about', label: 'À propos du mini-golf' }] }
     ], act), S.stage);
     startHole(0); S.banner = null; startCard();
@@ -2657,7 +2757,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   }
 
   X.apps.minigolf = open;
-  X.minigolf = { HOLES, S, physics, shoot, startHole, totals };
+  X.minigolf = { HOLES, S, physics, shoot, startHole, totals, endCard };
 })();
 
 /* ---- desktop.js ---- */

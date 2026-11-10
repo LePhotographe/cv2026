@@ -342,6 +342,8 @@ hr.xp { border: 0; border-top: 1px solid #aca899; border-bottom: 1px solid #fff;
 .mg-card-b th, .mg-card-b td { padding: 2px 6px; text-align: center; border-bottom: 1px solid #e8e6dc; }
 .mg-card-b th { font-weight: normal; background: linear-gradient(180deg, #fff, #ebe9de); }
 .mg-card-b td:nth-child(2), .mg-card-b th:nth-child(2) { text-align: left; }
+.mg-card-b table.mg-sc { font-size: 10px; } .mg-sc th, .mg-sc td { padding: 2px 3px; } .mg-sc td:first-child, .mg-sc th:first-child { text-align: left; }
+.mg-card-b .mg-sc td:nth-child(2), .mg-card-b .mg-sc th:nth-child(2) { text-align: center; }
 .mg-big { font: 700 22px var(--xp-ui); color: #1d3f8f; text-align: center; padding: 4px 0; }
 
 
