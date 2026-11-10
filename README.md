@@ -14,6 +14,3 @@ GitHub Pages sert les deux fichiers à la racine du dépôt :
 - `source/src/` : le code (contenu du CV dans `js/data.js`, fichiers texte dans `js/fs.js`, styles dans `xp.css`)
 - `source/assets/` : photo, fond d'écran, pointeurs, PDF
 - `source/build.mjs` : assemble le tout
-
-Pour régénérer le site : `cd source && node build.mjs`, puis copier
-`source/dist/standalone/index.html` et le PDF à la racine du dépôt.
