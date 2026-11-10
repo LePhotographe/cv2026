@@ -528,6 +528,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     email: 'arthur.chauvineau@gmail.com',
     phone: '06 24 95 91 27',
     phoneHref: 'tel:+33624959127',
+    linkedin: 'https://www.linkedin.com/in/arthurchauvineau/',
     pitch: "Professionnel transversal à la croisée du business, de l’expérience client et de la transformation digitale, j’aime comprendre les organisations, identifier leurs axes d’amélioration et construire des solutions concrètes. Mon parcours entrepreneurial et opérationnel me permet de relier vision stratégique, enjeux clients et performance.",
     golf: 'Golfeur depuis 25 ans'
   };
@@ -770,6 +771,10 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     copy: u => '<path d="M8 6h17l6 6v20H8z" fill="#fff" stroke="#6f7a85" stroke-width="1.2"/><path d="M17 15h17l6 6v22H17z" fill="#fff" stroke="#6f7a85" stroke-width="1.2"/><path d="M21 25h14M21 29h14M21 33h14M21 37h9" stroke="#8c96a0" stroke-width="1.4"/>',
     help: u => '<defs><radialGradient id="a' + u + '" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#7ab8ff"/><stop offset="1" stop-color="#1f58c4"/></radialGradient></defs><circle cx="24" cy="24" r="19" fill="url(#a' + u + ')" stroke="#163f8e" stroke-width="1.4"/><path d="M18 18.5a6 6 0 1 1 8.6 5.4c-1.7.9-2.6 2-2.6 3.9v1.2" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><circle cx="24" cy="35" r="2.4" fill="#fff"/>',
     views: u => '<rect x="5" y="7" width="16" height="14" fill="#fff" stroke="#3a6fc4" stroke-width="1.4"/><rect x="27" y="7" width="16" height="14" fill="#fff" stroke="#3a6fc4" stroke-width="1.4"/><rect x="5" y="27" width="16" height="14" fill="#fff" stroke="#3a6fc4" stroke-width="1.4"/><rect x="27" y="27" width="16" height="14" fill="#fff" stroke="#3a6fc4" stroke-width="1.4"/><path d="M8 11h10M30 11h10M8 31h10M30 31h10" stroke="#f0b73a" stroke-width="3"/>',
+    weblink: u => '<defs><radialGradient id="a' + u + '" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9fd3ff"/><stop offset=".6" stop-color="#2f7fe0"/><stop offset="1" stop-color="#174a9c"/></radialGradient></defs>' +
+      '<path d="M9 3h20l9 9v33H9z" fill="#fff" stroke="#6f7a85" stroke-width="1.1"/><path d="M29 3v9h9" fill="#dfe4e8" stroke="#6f7a85" stroke-width="1.1"/>' +
+      '<circle cx="23" cy="25" r="11" fill="url(#a' + u + ')" stroke="#123a7c"/><g fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1"><ellipse cx="23" cy="25" rx="4.8" ry="11"/><path d="M12 25h22M13.6 19.5h18.8M13.6 30.5h18.8"/></g>' +
+      '<rect x="2" y="32" width="14" height="14" fill="#fff" stroke="#555" stroke-width="1"/><path d="M5.5 43c0-5 2.5-7.5 7-7.5" fill="none" stroke="#1f58c4" stroke-width="2"/><path d="M10 33.2l4.2 2.3-3.8 3z" fill="#1f58c4"/>',
     minigolf: u => '<defs><linearGradient id="a' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fd36a"/><stop offset="1" stop-color="#239a34"/></linearGradient></defs>' +
       '<path d="M4 10h40v28H4z" fill="#8a5a2b" stroke="#5a3712" stroke-width="1.2"/><path d="M7 13h34v22H7z" fill="url(#a' + u + ')"/><circle cx="33" cy="22" r="3.4" fill="#0d2410"/><path d="M33 22V8" stroke="#f4f4f2" stroke-width="1.6"/><path d="M33.8 8.4l8 3-8 3z" fill="#e53935" stroke="#8b1d1b" stroke-width=".6"/>' +
       '<circle cx="14" cy="29" r="3.6" fill="#fff" stroke="#8b9196"/><path d="M17 27l10-4" stroke="#fff" stroke-width="1.2" stroke-dasharray="2 2"/>',
@@ -955,6 +960,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     leader('CV Arthur Chauvineau.pdf', 'la version imprimable', 28),
     leader('Écrire à Arthur', 'un message prêt à envoyer', 28),
     leader('Mini-golf', "golfeur depuis 25 ans, j'en ai fait un jeu", 28),
+    leader('Mon LinkedIn', 'mon profil en ligne', 28),
     '', h2('En bref'), P.name, ascii(P.headline), P.status, '', 'E-mail     : ' + P.email, 'Téléphone  : ' + P.phone, ''
   ].join('\r\n');
   const cherche = [h1('CE QUE JE CHERCHE'), '',
@@ -2376,6 +2382,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     Files.pdf === 'ok' ? { id: 'cvpdf', label: 'CV Arthur Chauvineau.pdf', icon: 'pdf', tip: 'La version imprimable', node: 'cvpdf', run: () => A.open('cvpdf') } : null,
     { id: 'mail', label: 'Écrire à Arthur', icon: 'compose', tip: 'Un message prêt à envoyer', run: () => A.compose() },
     { id: 'minigolf', label: 'Mini-golf', icon: 'minigolf', tip: 'Golfeur depuis 25 ans : 4 trous, un par étape de mon parcours', run: () => A.minigolf() },
+    { id: 'linkedin', label: 'Mon LinkedIn', icon: 'weblink', tip: 'Mon profil LinkedIn (s’ouvre dans un nouvel onglet)', run: () => X.openExternal(P.linkedin) },
     { id: 'trash', label: 'Corbeille', icon: 'trash', tip: 'La Corbeille est vide.', node: 'trash', corner: true, run: () => A.explorer('trash') }
   ].filter(Boolean);
   const iconBtn = i => '<button class="dico" type="button" data-icon="' + i.id + '" title="' + esc(X.fr(i.tip)) + '">' + ico(i.icon) + '<span>' + T(i.label) + '</span></button>';
@@ -2447,7 +2454,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     setTimeout(() => {
       w.classList.add('is-done');
       try { sessionStorage.setItem('ac.session', '1'); } catch (e) { /* ignoré */ }
-      if (!route() && !X.small()) A.profile();
+      if (!route() && !X.small()) { A.open('lisezmoi'); A.profile(); }
       setTimeout(() => { if (!(X.small() && WM.all().length) && !WM.get('minigolf')) balloon(true); }, 1600);
     }, 650);
   }
