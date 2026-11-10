@@ -16,7 +16,7 @@ const js = JS_ORDER.map(f => {
 
 // Pointeurs : PNG en data URI (1x et 2x)
 let css = src('xp.css');
-for (const name of ['arrow', 'hand', 'text', 'nwse', 'wait']) {
+for (const name of ['arrow', 'hand', 'text', 'nwse', 'wait', 'help']) {
   const key = name.toUpperCase();
   css = css.split('{{CUR_' + key + '2}}').join(b64('cursors/' + name + '@2x.png', 'image/png'));
   css = css.split('{{CUR_' + key + '}}').join(b64('cursors/' + name + '.png', 'image/png'));

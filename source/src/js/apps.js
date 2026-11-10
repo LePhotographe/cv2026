@@ -330,14 +330,16 @@
     if (ex) { WM.focus(id); if (tab) ex.showTab(tab); return ex; }
     const TABS = [['gen', 'Général'], ['pres', 'Présentation'], ['parc', 'Parcours'], ['contact', 'Contact']];
     const html = '<div class="dlg pp"><div><div class="tabs" role="tablist">' + TABS.map(([k, l]) => '<button class="tab" type="button" role="tab" id="pp-t-' + k + '" aria-controls="pp-p" aria-selected="false" data-tab="' + k + '">' + T(l) + '</button>').join('') +
-      '</div><div class="tabpanel" id="pp-p" role="tabpanel"></div></div><div class="dlg-btns"><button class="btn btn--default" type="button" data-b="ok">OK</button><button class="btn" type="button" data-b="cancel">Annuler</button><button class="btn" type="button" disabled>Appliquer</button></div></div>';
+      '</div><div class="tabpanel" id="pp-p" role="tabpanel"></div></div><div class="dlg-btns"><button class="btn btn--default" type="button" data-b="ok">OK</button><button class="btn" type="button" data-b="cancel">Annuler</button><button class="btn is-disabled" type="button" aria-disabled="true" data-apply="1" data-tip="Grisé. Essayez quand même, on ne sait jamais.">Appliquer</button></div></div>';
     const roles = [];
     D.experiences.forEach(e => e.chapters.forEach((c, k) => roles.push({ period: c.period, role: c.role, org: e.company === 'Photographe indépendant' ? 'À mon compte' : e.company, file: 'exp/' + e.id + '/' + k })));
     const panels = {
-      gen: () => '<div class="pp-gen"><div class="pp-photo"><img src="' + (IMG.portrait || IMG.avatar || '') + '" alt="Portrait d’Arthur Chauvineau"></div><div>' +
-        '<p class="pp-k">Profil :</p><p class="pp-v"><b>' + T(P.name) + '</b><br>' + T(P.headline) + '<br>Édition 2026</p>' +
-        '<p class="pp-k">Statut :</p><p class="pp-v pp-status">' + I('dispo') + T(P.status) + '</p>' +
-        '<p class="pp-k">Configuration :</p><p class="pp-v">' + D.stats.map(s => T(s.value + ' ' + s.label)).join('<br>') + '<br>' + T(P.golf) + '</p></div></div>',
+      gen: () => '<div class="pp-gen"><div><div class="pp-photo' + (W.film ? ' is-film' : '') + '" data-tip="' + esc(TIPS.photo) + '"><img src="' + (IMG.portrait || IMG.avatar || '') + '" alt="Portrait d’Arthur Chauvineau"></div>' +
+        (W.film ? '<p class="pp-cap">' + T('Tirage argentique · Portraitiste de France 2017 et 2021') + '</p>' : '') + '</div><div>' +
+        '<p class="pp-k">Profil :</p><p class="pp-v"><b data-tip="' + esc(TIPS.name) + '">' + T(P.name) + '</b><br><span data-tip="' + esc(TIPS.headline) + '">' + T(P.headline) + '</span><br><span class="pp-ed" data-tip="' + esc(TIPS.ed) + '">Édition 2026</span>' +
+        (sp25() ? '<br><span data-tip="' + esc(TIPS.sp) + '">' + T('Service Pack 25 : golf inclus') + '</span>' : '') + '</p>' +
+        '<p class="pp-k">Statut :</p><p class="pp-v pp-status" data-tip="' + esc(TIPS.status) + '">' + I('dispo') + T(P.status) + '</p>' +
+        '<p class="pp-k">Configuration :</p><p class="pp-v">' + D.stats.map((s, i) => '<span data-tip="' + esc(TIPS.stats[i]) + '">' + T(s.value + ' ' + s.label) + '</span>').join('<br>') + '<br><span data-tip="' + esc(TIPS.golf) + '">' + T(P.golf) + '</span></p></div></div>',
       pres: () => '<p class="pp-lead">' + T(P.pitch) + '</p><fieldset class="grp"><legend>Ce que je cherche</legend><p>' + T(SEEK) + '</p></fieldset>' +
         '<fieldset class="grp"><legend>Ce que j’apporte</legend><ul class="pp-ul">' + BRINGS.map(b => '<li>' + T(b) + '</li>').join('') + '</ul></fieldset>',
       parc: () => '<p class="pp-lead">' + T('14 ans de parcours, 6 rôles dans 4 structures. ' + (window.matchMedia && matchMedia('(pointer: coarse)').matches ? 'Touchez' : 'Double-cliquez sur') + ' un poste pour lire le détail.') + '</p><div class="lv lv--wrap"><table><thead><tr><th>Période</th><th>Poste</th><th>Structure</th></tr></thead><tbody>' +
@@ -349,7 +351,7 @@
         '<fieldset class="grp"><legend>Curriculum vitae</legend><div class="row-btn row-btn--wrap">' + (Files.pdf === 'ok' ? '<button class="btn" type="button" data-p="pdf">Télécharger le PDF…</button>' : '') + '<button class="btn" type="button" data-p="cv">Ouvrir le CV</button>' +
         (X.canSave() ? '<button class="btn" type="button" data-p="vcf">Carte de visite (.vcf)</button>' : '') + '</div></fieldset></div>'
     };
-    const W = WM.create(id, { title: 'Propriétés d’Arthur Chauvineau', icon: 'profile', dialog: true, w: 460, hash: 'profil', ctrls: ['help', 'close'], onHelp: () => open('lisezmoi'), html, focus: '.btn--default' });
+    const W = WM.create(id, { title: 'Propriétés d’Arthur Chauvineau', icon: 'profile', dialog: true, w: 460, hash: 'profil', ctrls: ['help', 'close'], onHelp: () => helpMode(W), onClose: () => tipClose(), html, focus: '.btn--default' });
     const panel = $('#pp-p', W.body);
     W.showTab = k => {
       $$('.tab', W.body).forEach(t => { const on = t.dataset.tab === k; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
@@ -368,20 +370,97 @@
     };
     let lastPT = 'mouse';
     W.body.addEventListener('pointerdown', e => { lastPT = e.pointerType || 'mouse'; });
+    // Easter egg 1 : le bouton Appliquer, grisé, finit par répondre
+    let applyN = 0, photoN = 0, photoT = 0;
+    // Easter egg 4 : le « ? » de la barre de titre, mode « Qu'est-ce que c'est ? »
+    W.el.addEventListener('click', e => {
+      if (!W.el.classList.contains('is-helpmode') || e.target.closest('.win-ctrls')) return;
+      e.preventDefault(); e.stopPropagation();
+      W.el.classList.remove('is-helpmode');
+      const t = e.target.closest('[data-tip]');
+      tipShow(t ? t.dataset.tip : 'Aucune aide n’est disponible pour cet élément.', e.clientX, e.clientY);
+    }, true);
     W.body.addEventListener('click', e => {
+      if (e.target.closest('[data-apply]')) {
+        Sfx.deny();
+        if (++applyN >= 3) { applyN = 0; msg({ title: 'Propriétés d’Arthur Chauvineau', icon: 'error', w: 380, html: '<p>' + T('Impossible d’appliquer les modifications : ce profil est déjà optimisé.') + '</p>' }); }
+        return;
+      }
+      // Easter egg 2 : cinq clics sur la photo, développement argentique
+      if (e.target.closest('.pp-photo')) {
+        clearTimeout(photoT); photoT = setTimeout(() => { photoN = 0; }, 1500);
+        if (++photoN >= 5) { photoN = 0; develop(W); }
+        return;
+      }
       const t = e.target.closest('[data-tab]'); if (t) { if (W.tab !== t.dataset.tab) Sfx.nav(); W.showTab(t.dataset.tab); return; }
       if (e.target.closest('[data-b]')) { WM.close(id); return; }
       const p = e.target.closest('[data-p]'); if (p) { pAct(p.dataset.p); return; }
       const r = e.target.closest('[data-file]');
       if (r) { $$('[data-file]', panel).forEach(x => x.classList.toggle('is-sel', x === r)); if (lastPT === 'touch' || lastPT === 'pen') open(r.dataset.file); }
     });
-    W.body.addEventListener('dblclick', e => { const r = e.target.closest('[data-file]'); if (r && lastPT === 'mouse') open(r.dataset.file); });
+    W.body.addEventListener('dblclick', e => {
+      // Easter egg 3 : double-clic sur « Édition 2026 », installation du Service Pack 25
+      if (e.target.closest('.pp-ed')) { installSP(W); return; }
+      const r = e.target.closest('[data-file]'); if (r && lastPT === 'mouse') open(r.dataset.file);
+    });
     W.body.addEventListener('keydown', e => {
       const t = e.target.closest('[data-tab]'); if (!t || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
       const keys = TABS.map(x => x[0]), i = keys.indexOf(t.dataset.tab), k = keys[(i + (e.key === 'ArrowRight' ? 1 : -1) + keys.length) % keys.length];
       e.preventDefault(); W.showTab(k); $('[data-tab="' + k + '"]', W.body).focus();
     });
     return W;
+  }
+
+  /* ---------- Easter eggs ---------- */
+  const TIPS = {
+    photo: 'C’est bien moi. Portraitiste de France, mais pour une fois de l’autre côté de l’objectif.',
+    name: 'Nom d’utilisateur : Arthur. Mot de passe : demander un entretien.',
+    headline: 'Les deux sujets sur lesquels on peut me lancer pendant des heures.',
+    ed: 'Version stable, mise à jour en continu depuis 2012.',
+    sp: 'Inclut un mulligan au mini-golf. Une seule fois par partie, comme au vrai golf.',
+    status: 'Statut vérifié. Aucun redémarrage nécessaire pour me contacter.',
+    stats: ['Dont 25 ans de golf. Cherchez l’erreur.', 'Six rôles, une constante : comprendre avant de construire.', 'Deux fois, on m’a confié plus que ce pour quoi j’avais été recruté.', '36POSES : une pellicule de 36 poses, et pas une de gâchée.'],
+    golf: 'Handicap confidentiel. Le mini-golf de ce bureau, lui, est public.'
+  };
+  const sp25 = () => store.get('ac.sp25', '') === '1';
+  let tipEl = null;
+  function tipClose() { if (tipEl) { tipEl.remove(); tipEl = null; } }
+  function tipShow(text, x, y) {
+    tipClose();
+    const scr = document.getElementById('screen') || document.body, p = X.pt(x, y);
+    tipEl = document.createElement('div'); tipEl.className = 'whatsthis'; tipEl.setAttribute('role', 'tooltip'); tipEl.textContent = X.fr(text);
+    scr.appendChild(tipEl);
+    tipEl.style.left = Math.max(2, Math.min(p.x + 4, scr.clientWidth - tipEl.offsetWidth - 4)) + 'px';
+    tipEl.style.top = Math.max(2, Math.min(p.y + 14, scr.clientHeight - tipEl.offsetHeight - 4)) + 'px';
+    setTimeout(() => document.addEventListener('pointerdown', tipClose, { once: true, capture: true }), 0);
+  }
+  function helpMode(W) { tipClose(); W.el.classList.toggle('is-helpmode'); Sfx.nav(); }
+  function develop(W) {
+    if (W.film) { W.film = false; W.showTab('gen'); Sfx.pop(); return; }
+    if (W.developing) return;
+    W.developing = true;
+    const ph = $('.pp-photo', W.body); if (!ph) { W.developing = false; return; }
+    const box = document.createElement('div'); box.className = 'pp-dev';
+    box.innerHTML = T('Développement en cours…') + '<i class="mg-pow"><b></b></i>';
+    ph.appendChild(box);
+    const bar = $('b', box); let k = 0;
+    const tick = setInterval(() => {
+      k += 6; bar.style.width = Math.min(100, k) + '%';
+      if (k >= 100) {
+        clearInterval(tick); W.developing = false; W.film = true;
+        if (WM.get('profil') && W.tab === 'gen') W.showTab('gen');
+        Sfx.ding(); toast('Tirage argentique terminé');
+      }
+    }, 120);
+  }
+  function installSP(W) {
+    if (sp25()) { toast('Service Pack 25 déjà installé'); return; }
+    X.busy(1200); toast('Installation du Service Pack 25…');
+    setTimeout(() => {
+      store.set('ac.sp25', '1');
+      if (WM.get('profil') && W.tab === 'gen') W.showTab('gen');
+      msg({ title: 'Service Pack 25', icon: 'minigolf', w: 380, html: '<p><b>' + T('Service Pack 25 : golf inclus') + '</b></p><p>' + T('Installation terminée. Un mulligan est désormais disponible dans le mini-golf : menu Partie, ou touche M. Un coup rejoué sans pénalité, une fois par partie.') + '</p>' });
+    }, 1200);
   }
 
   /* ---------- Téléchargement du PDF ---------- */

@@ -140,9 +140,20 @@
     S.banner = { t0: S.time, dur: 2.8, big: 'Trou ' + H.n + ' · Par ' + H.par, small: H.title + ' (' + H.era + ')', kind: 'intro' };
     status();
   }
-  function newGame() { closeCard(); S.scores = []; startHole(0); }
+  function newGame() { closeCard(); S.scores = []; S.mullUsed = false; startHole(0); }
+  const sp25 = () => { try { return localStorage.getItem('ac.sp25') === '1'; } catch (e) { return false; } };
+  const canMull = () => sp25() && !S.mullUsed && S.mode === 'aim' && S.prev && S.prev.hole === S.hole;
+  function mulligan() {
+    if (!canMull()) return;
+    S.mullUsed = true;
+    S.ball = { x: S.prev.x, y: S.prev.y, vx: 0, vy: 0, vis: true, sc: 1, al: 1 };
+    S.rest = { x: S.prev.x, y: S.prev.y }; S.strokes = S.prev.strokes; S.prev = null;
+    S.banner = { t0: S.time, dur: 1.4, big: 'Mulligan !', small: 'Coup rejoué sans pénalité' };
+    Sfx.pop(); status();
+  }
   function shoot(ang, pow) {
     if (S.mode !== 'aim' || pow < 0.04) return;
+    S.prev = { x: S.ball.x, y: S.ball.y, strokes: S.strokes, hole: S.hole };
     S.strokes++; S.hint = false;
     S.rest = { x: S.ball.x, y: S.ball.y };
     S.ball.vx = Math.cos(ang) * pow * VMAX; S.ball.vy = Math.sin(ang) * pow * VMAX;
@@ -518,6 +529,7 @@
   }
   function act(cmd) {
     if (cmd === 'new') newGame();
+    else if (cmd === 'mull') mulligan();
     else if (cmd === 'restart') { if (S.mode === 'intro' || S.mode === 'end') { newGame(); return; } closeCard(); S.scores.length = S.hole; startHole(S.hole); }
     else if (cmd === 'sound') { Sfx.setEnabled(!Sfx.enabled); dispatchEvent(new Event('sfxchange')); }
     else if (cmd === 'best') bestDialog();
@@ -554,6 +566,7 @@
     cv.addEventListener('lostpointercapture', e => { if (S.drag && e.pointerId === S.drag.id) { S.drag = null; powUI(); } });
     W.body.addEventListener('keydown', e => {
       if (e.key === 'F2') { e.preventDefault(); newGame(); return; }
+      if ((e.key === 'm' || e.key === 'M') && canMull()) { e.preventDefault(); mulligan(); return; }
       if (e.target !== cv || S.mode !== 'aim') return;
       const stepA = (e.shiftKey ? 0.5 : 2) * Math.PI / 180;
       if (e.key === 'ArrowLeft') S.aim.ang -= stepA;
@@ -578,13 +591,13 @@
     if (WM.get('minigolf')) { WM.focus('minigolf'); return WM.get('minigolf'); }
     const html = '<div class="mg"><div class="mg-stage"><canvas class="mg-cv" tabindex="0" aria-label="' + esc('Parcours de mini-golf : tirez en arrière pour viser, relâchez pour jouer') + '"></canvas><div class="mg-ov"></div></div>' +
       '<div class="sbar"><span class="grow mg-h"></span><span class="mg-s"></span><span class="mg-t"></span><span class="mg-p"><em>Puissance</em><i class="mg-pow" aria-hidden="true"><b></b></i></span></div></div>';
-    Object.assign(S, { alive: true, paused: false, time: 0, sndT: 0, raf: 0, last: 0, hint: true, scores: [], cache: null, s: 0 });
+    Object.assign(S, { alive: true, paused: false, time: 0, sndT: 0, raf: 0, last: 0, hint: true, scores: [], cache: null, s: 0, mullUsed: false, prev: null });
     const W = WM.create('minigolf', { title: 'Mini-golf', icon: 'minigolf', w: 606, h: 478, html, kind: 'game', hash: 'minigolf', minW: 300, minH: 240, focus: '.mg-cv',
       onClose: () => { S.alive = false; if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; if (S.ro) S.ro.disconnect(); S.W = null; S.cv = null; S.cache = null; },
       onMin: () => { S.paused = true; }, onRestore: () => { S.paused = false; kick(); }, onResize: () => layout() });
     S.W = W; S.cv = $('.mg-cv', W.body); S.ctx = S.cv.getContext('2d'); S.stage = $('.mg-stage', W.body); S.ov = $('.mg-ov', W.body);
     $('.mg', W.body).insertBefore(menubar([
-      { label: 'Partie', items: () => [{ id: 'new', label: 'Nouvelle partie', key: 'F2' }, { id: 'restart', label: 'Recommencer le trou', disabled: S.mode === 'intro' || S.mode === 'end' }, { sep: true }, { id: 'sound', label: 'Effets sonores', checked: Sfx.enabled }, { sep: true }, { id: 'best', label: 'Meilleur score…' }, { sep: true }, { id: 'quit', label: 'Quitter' }] },
+      { label: 'Partie', items: () => [{ id: 'new', label: 'Nouvelle partie', key: 'F2' }, { id: 'restart', label: 'Recommencer le trou', disabled: S.mode === 'intro' || S.mode === 'end' }, sp25() ? { id: 'mull', label: 'Mulligan', key: 'M', disabled: !canMull() } : null, { sep: true }, { id: 'sound', label: 'Effets sonores', checked: Sfx.enabled }, { sep: true }, { id: 'best', label: 'Meilleur score…' }, { sep: true }, { id: 'quit', label: 'Quitter' }] },
       { label: '?', items: [{ id: 'howto', label: 'Comment jouer' }, { sep: true }, { id: 'about', label: 'À propos du mini-golf' }] }
     ], act), S.stage);
     startHole(0); S.banner = null; startCard();
