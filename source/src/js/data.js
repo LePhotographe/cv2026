@@ -9,6 +9,7 @@
     email: 'arthur.chauvineau@gmail.com',
     phone: '06 24 95 91 27',
     phoneHref: 'tel:+33624959127',
+    linkedin: 'https://www.linkedin.com/in/arthurchauvineau/',
     pitch: "Professionnel transversal à la croisée du business, de l’expérience client et de la transformation digitale, j’aime comprendre les organisations, identifier leurs axes d’amélioration et construire des solutions concrètes. Mon parcours entrepreneurial et opérationnel me permet de relier vision stratégique, enjeux clients et performance.",
     golf: 'Golfeur depuis 25 ans'
   };

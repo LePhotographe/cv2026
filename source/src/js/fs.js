@@ -69,6 +69,7 @@
     leader('CV Arthur Chauvineau.pdf', 'la version imprimable', 28),
     leader('Écrire à Arthur', 'un message prêt à envoyer', 28),
     leader('Mini-golf', "golfeur depuis 25 ans, j'en ai fait un jeu", 28),
+    leader('Mon LinkedIn', 'mon profil en ligne', 28),
     '', h2('En bref'), P.name, ascii(P.headline), P.status, '', 'E-mail     : ' + P.email, 'Téléphone  : ' + P.phone, ''
   ].join('\r\n');
   const cherche = [h1('CE QUE JE CHERCHE'), '',

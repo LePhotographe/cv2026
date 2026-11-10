@@ -17,6 +17,7 @@
     Files.pdf === 'ok' ? { id: 'cvpdf', label: 'CV Arthur Chauvineau.pdf', icon: 'pdf', tip: 'La version imprimable', node: 'cvpdf', run: () => A.open('cvpdf') } : null,
     { id: 'mail', label: 'Écrire à Arthur', icon: 'compose', tip: 'Un message prêt à envoyer', run: () => A.compose() },
     { id: 'minigolf', label: 'Mini-golf', icon: 'minigolf', tip: 'Golfeur depuis 25 ans : 4 trous, un par étape de mon parcours', run: () => A.minigolf() },
+    { id: 'linkedin', label: 'Mon LinkedIn', icon: 'weblink', tip: 'Mon profil LinkedIn (s’ouvre dans un nouvel onglet)', run: () => X.openExternal(P.linkedin) },
     { id: 'trash', label: 'Corbeille', icon: 'trash', tip: 'La Corbeille est vide.', node: 'trash', corner: true, run: () => A.explorer('trash') }
   ].filter(Boolean);
   const iconBtn = i => '<button class="dico" type="button" data-icon="' + i.id + '" title="' + esc(X.fr(i.tip)) + '">' + ico(i.icon) + '<span>' + T(i.label) + '</span></button>';
@@ -88,7 +89,7 @@
     setTimeout(() => {
       w.classList.add('is-done');
       try { sessionStorage.setItem('ac.session', '1'); } catch (e) { /* ignoré */ }
-      if (!route() && !X.small()) A.profile();
+      if (!route() && !X.small()) { A.open('lisezmoi'); A.profile(); }
       setTimeout(() => { if (!(X.small() && WM.all().length) && !WM.get('minigolf')) balloon(true); }, 1600);
     }, 650);
   }
