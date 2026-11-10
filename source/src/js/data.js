@@ -170,5 +170,171 @@
     { top: [16, 3, 4], mid: [46, 8, 10], bottom: [110, 18, 22], wave: [255, 150, 140], glow: [180, 30, 30] }
   ];
 
+
+  // Détail des fichiers texte (CV + LinkedIn, dates du CV conservées)
+  D.details = {
+    'demooz/0': {
+      place: 'Toulouse',
+      context: 'Pilotage de la stratégie technologique et de l’évolution des solutions digitales de Demooz, en lien direct avec la direction. Mon rôle : faire le lien entre les enjeux business, les besoins opérationnels et les possibilités technologiques, pour concevoir des solutions adaptées et durables.',
+      sections: [
+        ['Projets phares', [
+          '2 CV Lovers, mon plus gros projet : le programme qui accompagne le retour de la 2 CV en 2026, géré en marque blanche pour le compte de Citroën. Communauté européenne de passionnés, parcours d’inscription en 10 langues intégré au site de Citroën, espace ambassadeur et support.',
+          'Husqvarna - Le Club, mon deuxième plus gros projet, qui tourne depuis 2023 : programme ambassadeur autour des robots tondeuses en France. Pilotage de la performance saison par saison, audit de la qualité des données, bilans et recommandations pour la saison suivante.'
+        ]],
+        ['Autres programmes', [
+          'Citroën : programmes ambassadeurs en France, en Italie et en Espagne.',
+          'DS Automobiles : espace « DS Only You Ambassadors », entièrement redessiné selon la charte de la marque.',
+          'Deezer : programme Deezer Ambassadors, dédié aux équipes en magasin.'
+        ]],
+        ['Pilotage technologique et organisationnel', [
+          'Définition des orientations techniques et de l’architecture des outils.',
+          'Pilotage de la roadmap et des développements, de la conception à la livraison.',
+          'Coordination fonctionnelle d’une équipe de 1 à 3 développeurs.',
+          'Sélection, pilotage et négociation avec les prestataires techniques.',
+          'Gestion des budgets, des délais et de la qualité des livrables.',
+          'Participation aux décisions stratégiques sur les produits et les investissements technologiques.'
+        ]],
+        ['Transformation et optimisation', [
+          'Refonte complète des outils internes et des solutions digitales de l’entreprise.',
+          'Rationalisation des infrastructures et des technologies.',
+          'Automatisation de processus auparavant manuels.',
+          'Mutualisation des développements entre les différents projets.',
+          'Amélioration continue de l’expérience utilisateur, de la stabilité et de la qualité des outils.',
+          'Données des programmes sur MongoDB Atlas, reporting automatisé vers Google Sheets et tableaux de bord Power BI.'
+        ]]
+      ],
+      results: ['Réduction de 50 % des coûts d’exploitation liés aux solutions technologiques.', 'Lancement de nouveaux projets accéléré.', 'Efficacité opérationnelle améliorée grâce à l’automatisation et à l’évolution des outils.']
+    },
+    'demooz/1': {
+      place: 'Toulouse',
+      context: 'Accompagnement et développement d’un portefeuille de comptes clés à dimension européenne, principalement dans l’automobile et l’électronique grand public.',
+      sections: [['Missions', [
+        'Gestion de 5 comptes clients, en lien avec des directions marketing nationales et européennes.',
+        'Conception, déploiement et suivi de programmes de communautés et d’ambassadeurs de marque.',
+        'Coordination des équipes commerciales, opérationnelles et techniques.',
+        'Pilotage de la performance des programmes à travers des indicateurs et des reportings réguliers.',
+        'Analyse des retours utilisateurs, et amélioration des parcours et de l’expérience client.',
+        'Développement des relations clients et identification de nouvelles opportunités.'
+      ]]],
+      results: ['Aucun compte perdu pendant toute la période de gestion du portefeuille.']
+    },
+    '36poses/0': {
+      place: 'Toulouse',
+      context: 'Création et développement de 36POSES, une plateforme e-commerce dédiée à la photographie argentique, imaginée pendant les confinements. Le point de départ : permettre aux photographes argentiques de continuer à faire développer leurs pellicules, tout en soutenant l’activité des laboratoires indépendants partout en France.',
+      sections: [
+        ['Création du projet', [
+          'Identification du besoin et validation de l’opportunité de marché.',
+          'Définition du positionnement, du modèle économique et de la stratégie commerciale.',
+          'Création de l’identité de marque et conception de l’expérience utilisateur.',
+          'Conception et développement de la plateforme e-commerce.',
+          'Construction d’un réseau de laboratoires partenaires et négociation des collaborations.'
+        ]],
+        ['Développement commercial et opérationnel', [
+          'Acquisition et fidélisation des clients.',
+          'Campagnes marketing et collaborations avec des influenceurs.',
+          'Mise en place de partenariats stratégiques.',
+          'Gestion de l’ensemble des opérations : finances, logistique, relation client et suivi des partenaires.'
+        ]]
+      ],
+      results: ['5 laboratoires partenaires répartis en France.', 'Plus de 400 clients.', 'Développement commercial en France et en Europe francophone.', 'Rentabilité atteinte dès le troisième mois d’activité.'],
+      summary: 'Un projet entrepreneurial mené de bout en bout, de l’identification du besoin à la gestion quotidienne de l’activité.'
+    },
+    'carmes/0': {
+      place: 'Toulouse',
+      context: 'Évolution vers la direction adjointe pour poursuivre le développement de l’entreprise, notamment sur la communication, le marketing et l’expérience client. Participation active à la gestion et aux orientations stratégiques du studio, en lien direct avec sa direction.',
+      sections: [
+        ['Développement et stratégie', [
+          'Pilotage de la communication et du marketing des différentes activités du studio.',
+          'Participation aux décisions stratégiques et à l’élaboration des budgets.',
+          'Développement et structuration de nouvelles offres commerciales.',
+          'Suivi de la performance et identification de nouvelles opportunités de développement.'
+        ]],
+        ['Gestion opérationnelle', [
+          'Suivi de la satisfaction client et gestion des situations complexes.',
+          'Élaboration et suivi des devis.',
+          'Supervision du laboratoire argentique et maintenance de ses équipements.',
+          'Coordination des activités et accompagnement des équipes au quotidien.',
+          'Encadrement des stagiaires et apprentis : plus de 50 personnes formées au fil de mes années au studio.'
+        ]]
+      ],
+      summary: 'Une expérience mêlant vision entrepreneuriale, gestion opérationnelle, développement commercial et proximité avec les clients.'
+    },
+    'carmes/1': {
+      place: 'Toulouse',
+      context: 'Recruté comme photographe, j’ai rapidement pris l’initiative de repenser l’identité et le développement de l’entreprise, avec une large autonomie dans la conduite des projets.',
+      sections: [
+        ['Transformation et développement de l’entreprise', [
+          'Refonte complète de l’identité visuelle et de la communication.',
+          'Conception et mise en ligne d’un nouveau site internet.',
+          'Repositionnement et structuration des offres commerciales.',
+          'Intégration d’une activité e-commerce.',
+          'Nouveaux supports de communication et participation à des salons professionnels.'
+        ]],
+        ['Photographie et expertise métier', [
+          'Portraits en studio et en lumière naturelle, reportages de mariage.',
+          'Responsabilité opérationnelle et commerciale du laboratoire argentique.',
+          'Formations auprès de Meilleurs Ouvriers de France.',
+          'Formation et accompagnement des stagiaires et apprentis.'
+        ]]
+      ],
+      results: ['Contribution à une croissance annuelle du chiffre d’affaires de 5 %.', 'E-commerce développé jusqu’à représenter 15 % de l’activité.', 'Titre de Portraitiste de France en 2017 : à l’époque, j’étais le plus jeune photographe à l’obtenir. Titre renouvelé en 2021.']
+    },
+    'independant/0': {
+      place: 'Limoges',
+      context: 'Création et développement de mon activité de photographe indépendant, avec une double spécialisation : la photographie professionnelle pour les entreprises et la photographie sociale.',
+      sections: [
+        ['Développement de l’activité', [
+          'Création de mon identité professionnelle et de mon site internet.',
+          'Définition des offres et développement commercial.',
+          'Prospection, acquisition et fidélisation des clients.',
+          'Gestion autonome de l’ensemble des aspects commerciaux, administratifs et opérationnels.'
+        ]],
+        ['Photographie professionnelle', [
+          'Reportages pour valoriser les entreprises, leurs locaux, leurs produits et leurs services.',
+          'Création de visites virtuelles Google pour renforcer la visibilité des établissements.'
+        ]],
+        ['Photographie sociale', [
+          'Portraits individuels et de famille.',
+          'Photographie de mariage et accompagnement des clients dans leurs projets personnels.'
+        ]]
+      ],
+      summary: 'Une première expérience entrepreneuriale qui m’a donné une vision globale d’une activité : de la conception de l’offre à la relation client, en passant par la communication et la réalisation des prestations.'
+    }
+  };
+
+  D.compDetails = {
+    'experience-client': {
+      intro: 'Comprendre ce que vit le client, du premier contact au suivi, et améliorer chaque étape du parcours.',
+      proof: [['demooz', 'Programmes ambassadeurs (2 CV Lovers, Husqvarna - Le Club, Citroën, DS Automobiles, Deezer) et parcours améliorés à partir des retours utilisateurs'], ['36poses', 'Acquisition et fidélisation de plus de 400 clients'], ['carmes', 'Suivi de la satisfaction client et gestion des situations complexes'], ['independant', 'Portraits, mariages et reportages : accompagner chaque client dans son projet']],
+      tools: 'HubSpot, Power BI, Notion'
+    },
+    'strategie-business': {
+      intro: 'Définir un positionnement, construire une offre et développer un portefeuille dans la durée.',
+      proof: [['demooz', '5 comptes clés européens, aucun compte perdu'], ['36poses', 'Positionnement, modèle économique, 5 laboratoires partenaires, rentable dès le 3e mois'], ['carmes', 'Nouvelles offres commerciales, budgets, +5 % de chiffre d’affaires par an'], ['independant', 'Prospection, offres et fidélisation, en toute autonomie']],
+      tools: 'HubSpot, Excel, Canva, Suite Adobe'
+    },
+    'organisation-performance': {
+      intro: 'Analyser les processus, mesurer ce qui compte, puis automatiser ce qui peut l’être.',
+      proof: [['demooz', '-50 % de coûts d’exploitation technologiques, processus manuels automatisés, reportings réguliers'], ['36poses', 'Finances, logistique, relation client et suivi des partenaires'], ['carmes', 'Décisions de direction, devis, coordination des équipes, plus de 50 stagiaires et apprentis formés']],
+      tools: 'Jira, Trello, Notion, Excel, Power BI, SQL'
+    },
+    'transformation-digitale': {
+      intro: 'Faire évoluer les outils et les usages d’une organisation, sans perdre de vue le terrain.',
+      proof: [['demooz', 'Architecture, roadmap, équipe de 1 à 3 développeurs, prestataires techniques'], ['36poses', 'Plateforme e-commerce conçue et développée de A à Z'], ['carmes', 'Nouveau site internet et e-commerce porté à 15 % de l’activité'], ['dev-web', 'Titre RNCP niveau 5, OpenClassrooms, 2022']],
+      tools: 'Webflow, Zapier, Retool, MongoDB, Figma'
+    }
+  };
+
+  D.formDetails = {
+    'dev-web': { school: 'OpenClassrooms', text: ['Parcours Développeur web, titre RNCP de niveau 5, suivi de mars à septembre 2022.', 'Cette formation m’a donné les bases pour piloter ensuite l’architecture des outils et coordonner les développeurs chez Demooz, où je deviens Lead Tech l’année suivante.'] },
+    'european-photographer': { text: ['Titre de photographe obtenu en 2021.', 'Il s’ajoute à la certification Harvard Digital Photography et aux formations suivies auprès de Meilleurs Ouvriers de France.'] },
+    'portraitiste': { text: ['Titre obtenu une première fois en 2017 : à l’époque, j’étais le plus jeune photographe à le décrocher.', 'Titre renouvelé en 2021.'] },
+    'llce': { text: ['Licence de langues, littératures et civilisations étrangères, parcours anglais.'] }
+  };
+  D.extraFormation = [
+    { id: 'bac', title: 'Bac STI Génie mécanique', year: '2008 – 2011', kind: 'Diplôme', school: 'Lycée Turgot, Limoges', text: ['Baccalauréat sciences et technologies industrielles, spécialité génie mécanique, option européenne.'] }
+  ];
+  D.certifications = ['Fondamentaux du marketing numérique', 'Harvard Digital Photography', 'Apprenez à créer votre site web avec HTML5 et CSS3'];
+
   root.SiteData = D;
 })(typeof window !== 'undefined' ? window : globalThis);

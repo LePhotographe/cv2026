@@ -18,9 +18,17 @@
   const files = {};
   const add = (id, node) => { files[id] = Object.assign({ id }, node); return id; };
   const role = (e, c, k) => {
-    const lines = [h1(ascii((e.company + ' - ' + c.role).toUpperCase())), '', 'Période    : ' + ascii(c.period), 'Structure  : ' + ascii(e.company), '', h2('Missions'), ...c.lines.map(l => bullet(ascii(l))), ''];
+    const d = (D.details || {})[e.id + '/' + k] || {};
+    const lines = [h1(ascii((e.company + ' - ' + c.role).toUpperCase())), '', 'Période    : ' + ascii(c.period), 'Structure  : ' + ascii(e.company)];
+    if (d.place) lines.push('Lieu       : ' + d.place);
+    lines.push('');
+    if (d.context) lines.push(h2('Contexte'), wrap(ascii(d.context), 72, ''), '');
+    if (d.sections) d.sections.forEach(([t, items]) => lines.push(h2(ascii(t)), ...items.map(l => bullet(ascii(l))), ''));
+    else lines.push(h2('Missions'), ...c.lines.map(l => bullet(ascii(l))), '');
+    if (d.results) lines.push(h2('Résultats'), ...d.results.map(l => bullet(ascii(l))), '');
     if (e.levelup && k === 0) lines.push(h2('Évolution'), wrap(ascii(e.levelup) + '.', 72, ''), '');
     lines.push(h2('Compétences mobilisées'), wrap(ascii(e.skills.join(', ')), 72, ''), '');
+    if (d.summary) lines.push(h2('En résumé'), wrap(ascii(d.summary), 72, ''), '');
     return lines.join('\r\n');
   };
 
@@ -38,11 +46,16 @@
 
   // Compétences
   const compIds = D.competences.map(c => {
-    const lines = [h1(ascii(c.num + ' - ' + c.title.toUpperCase())), '', ...c.settings.map(s => bullet(ascii(s))), '', h2('Mis en pratique')];
-    const labels = c.proof.map(([id]) => { const e = D.experiences.find(x => x.id === id), f = D.formation.find(x => x.id === id); return ascii(e ? e.company : f ? f.title : id); });
+    const d = (D.compDetails || {})[c.id] || {};
+    const lines = [h1(ascii(c.num + ' - ' + c.title.toUpperCase())), ''];
+    if (d.intro) lines.push(wrap(ascii(d.intro), 72, ''), '');
+    lines.push(h2('Ce que ça recouvre'), ...c.settings.map(s => bullet(ascii(s))), '', h2('Mis en pratique'));
+    const proof = d.proof || c.proof;
+    const labels = proof.map(([id]) => { const e = D.experiences.find(x => x.id === id), f = D.formation.find(x => x.id === id); return ascii(e ? e.company : f ? f.title : id); });
     const col = Math.max(...labels.map(l => l.length)) + 4;
-    c.proof.forEach(([, note], i) => lines.push(leader(labels[i], ascii(note), col)));
+    proof.forEach(([, note], i) => lines.push(leader(labels[i], ascii(note), col)));
     lines.push('');
+    if (d.tools) lines.push(h2('Outils'), wrap(ascii(d.tools), 72, ''), '');
     return add('comp/' + c.id, { type: 'txt', name: ascii(c.num + ' - ' + c.title + '.txt'), text: lines.join('\r\n') });
   });
   const tech = [h1('ENVIRONNEMENT TECHNIQUE'), '', ...D.tools.map(g => leader(ascii(g.label), g.items.join(', '), 22)), ''].join('\r\n');
@@ -52,8 +65,17 @@
   add('comp', { type: 'folder', name: 'Compétences', children: compIds, note: '4 domaines, outils, langues' });
 
   // Formation
-  const formIds = D.formation.map(f => add('form/' + f.id, { type: 'txt', name: ascii(f.year).replace(/ - /g, '-') + ' - ' + ascii(f.title) + '.txt', meta: ascii(f.year),
-    text: [h1(ascii(f.title.toUpperCase())), '', 'Année  : ' + ascii(f.year), 'Type   : ' + f.kind, '', wrap(ascii(f.note), 72, ''), ''].join('\r\n') }));
+  const formFile = f => {
+    const d = (D.formDetails || {})[f.id] || f;
+    const lines = [h1(ascii(f.title.toUpperCase())), '', 'Année   : ' + ascii(f.year), 'Type    : ' + f.kind];
+    if (d.school) lines.push('Où      : ' + ascii(d.school));
+    lines.push('');
+    (d.text || [f.note]).forEach(t => lines.push(wrap(ascii(t), 72, ''), ''));
+    return lines.join('\r\n');
+  };
+  const formName = f => ascii(f.year).replace(/ - /g, '-') + ' - ' + ascii(f.title) + '.txt';
+  const formIds = D.formation.concat(D.extraFormation || []).map(f => add('form/' + f.id, { type: 'txt', name: formName(f), meta: ascii(f.year), text: formFile(f) }));
+  if (D.certifications) formIds.push(add('form/certifs', { type: 'txt', name: 'Certifications.txt', text: [h1('CERTIFICATIONS'), '', ...D.certifications.map(c => bullet(ascii(c))), ''].join('\r\n') }));
   add('form', { type: 'folder', name: 'Formation', children: formIds, note: 'Diplômes et titres' });
 
   // Fichiers à la racine
