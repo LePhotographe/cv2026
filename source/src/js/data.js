@@ -8,7 +8,7 @@
     name: 'Arthur Chauvineau',
     headline: 'Expérience client · Transformation digitale',
     status: 'Ouvert aux opportunités',
-    email: 'arthur.chauvineau@gmail.com',
+    email: 'arthur@chauvineau.me',
     phone: '06 24 95 91 27',
     phoneHref: 'tel:+33624959127',
     linkedin: 'https://www.linkedin.com/in/arthurchauvineau/',
