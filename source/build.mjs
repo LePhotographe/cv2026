@@ -25,17 +25,22 @@ if (/\{\{CUR_/.test(css)) throw new Error('pointeur non remplacé : ' + css.matc
 const body = src('body-xp.html').replace('{{AVATAR}}', IMG.avatar).replace('{{WALLPAPER}}', WALL);
 
 const TITLE = 'Arthur Chauvineau';
+// Favicon : fichiers à la racine du site, et SVG en ligne pour la version artifact
+const FAV = ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png'];
+const FAV_SVG = 'data:image/svg+xml,' + encodeURIComponent(readFileSync(join(root, 'assets/favicon/favicon.svg'), 'utf8').trim());
+const ICONS_HEAD = '<link rel="icon" href="favicon.ico" sizes="any">\n<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
 const DESC = 'Arthur Chauvineau, expérience client et transformation digitale. Un CV interactif façon bureau des années 2000, avec un mini-golf.';
 const scripts = '<script>window.__IMG=' + JSON.stringify(IMG) + ';</script>\n<script>\n' + js + '\n</script>';
 
 mkdirSync(join(root, 'dist/standalone'), { recursive: true });
 
-const artifact = '<title>' + TITLE + '</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<meta name="description" content="' + DESC + '">\n<style>\n' + css + '\n</style>\n' + body + '\n' + scripts + '\n';
+const artifact = '<title>' + TITLE + '</title>\n<link rel="icon" href="' + FAV_SVG + '" type="image/svg+xml">\n<meta name="claude:viewport-fit-sides" content="cover">\n<meta name="description" content="' + DESC + '">\n<style>\n' + css + '\n</style>\n' + body + '\n' + scripts + '\n';
 writeFileSync(join(root, 'dist/artifact.html'), artifact);
 
-const standalone = '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>' + TITLE + '</title>\n<meta name="description" content="' + DESC + '">\n<meta property="og:title" content="' + TITLE + '">\n<meta property="og:description" content="' + DESC + '">\n<meta name="theme-color" content="#245edb">\n<style>\n:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}\n[hidden]{display:none!important}\n' + css + '\n</style>\n</head>\n<body>\n' + body + '\n' + scripts + '\n</body>\n</html>\n';
+const standalone = '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>' + TITLE + '</title>\n<meta name="description" content="' + DESC + '">\n<meta property="og:title" content="' + TITLE + '">\n<meta property="og:description" content="' + DESC + '">\n<meta name="theme-color" content="#245edb">\n' + ICONS_HEAD + '<style>\n:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}\n[hidden]{display:none!important}\n' + css + '\n</style>\n</head>\n<body>\n' + body + '\n' + scripts + '\n</body>\n</html>\n';
 writeFileSync(join(root, 'dist/standalone/index.html'), standalone);
 const PDF = join(root, 'assets/CV_Arthur_Chauvineau.pdf');
 copyFileSync(PDF, join(root, 'dist/standalone/CV_Arthur_Chauvineau.pdf'));
 copyFileSync(PDF, join(root, 'dist/CV_Arthur_Chauvineau.pdf'));
+for (const f of FAV) copyFileSync(join(root, 'assets/favicon', f), join(root, 'dist/standalone', f));
 console.log('artifact', (artifact.length / 1024).toFixed(0) + ' KB', '· standalone', (standalone.length / 1024).toFixed(0) + ' KB');
