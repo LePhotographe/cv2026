@@ -8,7 +8,7 @@ const b64 = (p, mime) => 'data:' + mime + ';base64,' + readFileSync(join(root, '
 
 const IMG = { avatar: b64('avatar.jpg', 'image/jpeg'), portrait: b64('portrait.webp', 'image/webp') };
 const WALL = b64('wallpaper.jpg', 'image/jpeg');
-const JS_ORDER = ['data.js', 'xp-icons.js', 'audio.js', 'fs.js', 'core.js', 'apps.js', 'minigolf.js', 'desktop.js'];
+const JS_ORDER = ['data.js', 'xp-icons.js', 'audio.js', 'fs.js', 'core.js', 'apps.js', 'minigolf.js', 'games.js', 'desktop.js'];
 const js = JS_ORDER.map(f => {
   if (!existsSync(join(root, 'src/js', f))) throw new Error('manquant : ' + f);
   return '/* ---- ' + f + ' ---- */\n' + src('js/' + f);

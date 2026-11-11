@@ -103,6 +103,12 @@
     bullet('Deux évolutions internes : photographe puis directeur adjoint, Key Account Manager puis Lead Tech.'),
     '', "Pour en parler : " + P.email + ' ou ' + P.phone, ''].join('\r\n');
   add('lisezmoi', { type: 'txt', name: 'LISEZMOI.txt', text: lisez });
+  const guest = [h1('SESSION INVITÉ'), '', "Bienvenue sur le poste d'Arthur Chauvineau.", '',
+    "Cette session ne donne accès qu'aux jeux :", bullet('Mini-golf'), bullet('Démineur'), bullet('Flipper'), '',
+    'Pour débloquer toutes les fonctionnalités, merci de contacter', 'Arthur Chauvineau.', '',
+    'E-mail     : ' + P.email, 'Téléphone  : ' + P.phone, '',
+    wrap("Astuce : fermez la session depuis le menu démarrer et ouvrez celle d'Arthur. C'est gratuit, et sans mot de passe.", 72, ''), ''].join('\r\n');
+  add('guest', { type: 'txt', name: 'LISEZMOI.txt', text: guest });
   add('cherche', { type: 'txt', name: 'Ce que je cherche.txt', text: cherche });
   add('cvdoc', { type: 'doc', name: 'CV Arthur Chauvineau.doc' });
   add('cvpdf', { type: 'pdf', name: 'CV Arthur Chauvineau.pdf', bytes: 927374 });

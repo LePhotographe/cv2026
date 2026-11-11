@@ -20,19 +20,35 @@
     { id: 'linkedin', label: 'Mon LinkedIn', icon: 'weblink', tip: 'Mon profil LinkedIn (s’ouvre dans un nouvel onglet)', run: () => X.openExternal(P.linkedin) },
     { id: 'trash', label: 'Corbeille', icon: 'trash', tip: '1 élément supprimé, pour une bonne raison', node: 'trash', corner: true, run: () => A.explorer('trash') }
   ].filter(Boolean);
+  // Session invité : trois jeux et un seul fichier texte
+  let session = 'arthur';
+  const GUEST = () => [
+    { id: 'guest', label: 'LISEZMOI.txt', icon: 'txt', tip: 'À lire avant de jouer', node: 'guest', run: () => A.open('guest') },
+    { id: 'minigolf', label: 'Mini-golf', icon: 'minigolf', tip: '18 trous de mini-golf', run: () => A.minigolf() },
+    { id: 'mines', label: 'Démineur', icon: 'mines', tip: 'Le grand classique', run: () => A.mines() },
+    { id: 'flipper', label: 'Flipper', icon: 'flipper', tip: 'Flipper Green, version golf', run: () => A.flipper() }
+  ];
+  const icons = () => (session === 'guest' ? GUEST() : ICONS());
+  function locked() {
+    X.msg({ id: 'locked', title: 'Accès restreint', icon: 'error', w: 400,
+      html: '<p>' + T('La session invité ne donne accès qu’aux jeux.') + '</p><p><b>' + T('Pour débloquer toutes les fonctionnalités, merci de contacter Arthur Chauvineau.') + '</b></p>',
+      buttons: [{ id: 'switch', label: 'Ouvrir la session d’Arthur' }, { id: 'ok', label: 'OK', def: true }],
+      onButton: b => { if (b === 'switch') setTimeout(() => { logoff(); login('arthur'); }, 50); } });
+  }
   const iconBtn = i => '<button class="dico" type="button" data-icon="' + i.id + '" title="' + esc(X.fr(i.tip)) + '">' + ico(i.icon) + '<span>' + T(i.label) + '</span></button>';
   function buildIcons() {
-    const list = ICONS(), sel = ($('.dico.is-sel') || {}).dataset;
+    const list = icons(), sel = ($('.dico.is-sel') || {}).dataset;
     $('#desk-icons').innerHTML = list.filter(i => !i.corner).map(iconBtn).join('');
     $('#desk-corner').innerHTML = list.filter(i => i.corner).map(iconBtn).join('');
     if (sel && sel.icon) { const b = $('.dico[data-icon="' + sel.icon + '"]'); if (b) b.classList.add('is-sel'); }
   }
   let opened = 0, hinted = false;
-  function runIcon(id) { const it = ICONS().find(i => i.id === id); if (it) { opened++; it.run(); } }
+  function runIcon(id) { const it = icons().find(i => i.id === id); if (it) { opened++; it.run(); } }
   function refresh() { const box = $('#desk'); box.classList.add('is-refresh'); setTimeout(() => { buildIcons(); box.classList.remove('is-refresh'); }, 120); }
 
   /* ---------- Menu démarrer ---------- */
   function buildStart() {
+    if (session === 'guest') return buildGuestStart();
     const left = [['profil', 'profile', 'Mon profil', 'Qui je suis'], ['mail', 'compose', 'Écrire à Arthur', 'Un message prêt à envoyer'], 'hr',
       ['lisezmoi', 'txt', 'LISEZMOI.txt'], ['cvdoc', 'doc', 'CV Arthur Chauvineau.doc'], ['minigolf', 'minigolf', 'Mini-golf']];
     const right = [['docs', 'mydocs', 'Mes documents'], ['exp', 'folder', 'Mes expériences'], ['comp', 'folder', 'Compétences'], ['form', 'folder', 'Formation'], 'hr',
@@ -41,6 +57,15 @@
     const item = ([id, ic, l, s]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + '" type="button" role="menuitem" data-sm="' + id + '">' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
     $('#startmenu').innerHTML = '<div class="sm-head">' + pic() + '<div>' + T(P.name) + '<small>' + T(P.status) + '</small></div></div><div class="sm-cols"><div class="sm-left">' +
       left.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') + '<div class="sm-grow"></div><div class="sm-hr"></div><button class="sm-item sm-all" type="button" role="menuitem" aria-haspopup="true" data-sm="all"><span>Tous les programmes</span>' + I('fwd') + '</button></div><div class="sm-right">' + right.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') +
+      '</div></div><div class="sm-foot"><button type="button" role="menuitem" data-sm="logoff">' + I('logoff') + 'Fermer la session</button></div>';
+  }
+  function buildGuestStart() {
+    const item = ([id, ic, l, s, off]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + (off ? ' is-off' : '') + '" type="button" role="menuitem" data-sm="' + id + '"' + (off ? ' title="Réservé à la session d’Arthur"' : '') + '>' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
+    const left = [['minigolf', 'minigolf', 'Mini-golf', '18 trous'], ['mines', 'mines', 'Démineur', 'Le grand classique'], ['flipper', 'flipper', 'Flipper', 'Version golf'], 'hr', ['guest', 'txt', 'LISEZMOI.txt']];
+    const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folder', 'Mes expériences', 0, 1], ['locked', 'folder', 'Compétences', 0, 1], ['locked', 'folder', 'Formation', 0, 1], 'hr',
+      ['locked', 'doc', 'CV Arthur Chauvineau', 0, 1], ['locked', 'compose', 'Écrire à Arthur', 0, 1], 'hr', ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons']];
+    $('#startmenu').innerHTML = '<div class="sm-head"><span class="pic">' + I('guestpic') + '</span><div>Invité<small>Session limitée aux jeux</small></div></div><div class="sm-cols"><div class="sm-left">' +
+      left.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') + '</div><div class="sm-right">' + right.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') +
       '</div></div><div class="sm-foot"><button type="button" role="menuitem" data-sm="logoff">' + I('logoff') + 'Fermer la session</button></div>';
   }
   function toggleStart(force) {
@@ -54,7 +79,8 @@
     toggleStart(false);
     const map = {
       profil: () => A.profile(), mail: () => A.compose(), minigolf: () => A.minigolf(), display: () => A.display(), help: () => A.open('lisezmoi'),
-      'copy-mail': () => copyText(P.email, null, 'Adresse'), 'copy-tel': () => copyText(P.phone, null, 'Numéro'), sound: toggleSound, logoff
+      'copy-mail': () => copyText(P.email, null, 'Adresse'), 'copy-tel': () => copyText(P.phone, null, 'Numéro'), sound: toggleSound, logoff,
+      mines: () => A.mines(), flipper: () => A.flipper(), guest: () => A.open('guest'), locked
     };
     if (map[id]) map[id](); else if (['docs', 'exp', 'comp', 'form'].includes(id)) A.explorer(id); else A.open(id);
   }
@@ -82,13 +108,19 @@
 
   /* ---------- Session ---------- */
   let logged = false;
-  function login() {
+  function login(kind) {
     if (logged) return; logged = true;
-    const w = $('#welcome'); w.classList.add('is-loading'); $('#welcome-hint').textContent = 'Ouverture de la session';
+    session = kind === 'guest' ? 'guest' : 'arthur';
+    document.documentElement.classList.toggle('is-guest', session === 'guest');
+    buildIcons(); buildStart();
+    if (session === 'guest') A.wall.apply('green'); else A.wall.apply(A.wall.current());
+    const w = $('#welcome'); w.classList.add('is-loading');
+    $(session === 'guest' ? '#welcome-guest-hint' : '#welcome-hint').textContent = 'Ouverture de la session';
     Sfx.chime(); X.busy(900);
     setTimeout(() => {
       w.classList.add('is-done');
-      try { sessionStorage.setItem('ac.session', '1'); } catch (e) { /* ignoré */ }
+      try { sessionStorage.setItem('ac.session', session); } catch (e) { /* ignoré */ }
+      if (session === 'guest') { if (!X.small()) A.open('guest'); return; }
       if (!route() && !X.small()) { A.open('lisezmoi'); A.profile(); setTimeout(() => WM.flash('np-lisezmoi'), 2200); }
       setTimeout(() => { if (!(X.small() && WM.all().length) && !WM.get('minigolf')) balloon(true); }, 1600);
     }, 650);
@@ -97,10 +129,11 @@
     WM.all().forEach(W => WM.close(W.id, true));
     balloon(false); logged = false; X.closeMenus();
     try { sessionStorage.removeItem('ac.session'); } catch (e) { /* ignoré */ }
-    const w = $('#welcome'); w.classList.remove('is-done', 'is-loading'); $('#welcome-hint').textContent = P.status;
+    const w = $('#welcome'); w.classList.remove('is-done', 'is-loading'); $('#welcome-hint').textContent = P.status; $('#welcome-guest-hint').textContent = 'Jeux uniquement';
     $('#welcome-user').focus({ preventScroll: true });
   }
   function route() {
+    if (session === 'guest') return false;
     const id = decodeURIComponent((location.hash || '').slice(1)).toLowerCase();
     if (!id) return false;
     const R = {
@@ -146,11 +179,11 @@
       const b = e.target.closest('.dico');
       if (b) {
         $$('.dico.is-sel').forEach(x => x.classList.remove('is-sel')); b.classList.add('is-sel');
-        const it = ICONS().find(i => i.id === b.dataset.icon);
+        const it = icons().find(i => i.id === b.dataset.icon);
         X.contextMenu(e, [{ id: 'open', label: 'Ouvrir', bold: true }, { sep: true }, { id: 'props', label: 'Propriétés', disabled: !(it.node || it.id === 'profil') }],
           cmd => { if (cmd === 'open') runIcon(it.id); else if (it.id === 'profil') A.profile(); else A.fileProps(it.node); });
       } else {
-        X.contextMenu(e, [{ id: 'refresh', label: 'Actualiser' }, { sep: true }, { id: 'mail', label: 'Écrire à Arthur' }, { sep: true }, { id: 'props', label: 'Propriétés' }],
+        X.contextMenu(e, [{ id: 'refresh', label: 'Actualiser' }, { sep: true }, session === 'guest' ? { id: 'lock', label: 'Écrire à Arthur', disabled: true } : { id: 'mail', label: 'Écrire à Arthur' }, { sep: true }, { id: 'props', label: 'Propriétés' }],
           cmd => { if (cmd === 'refresh') refresh(); else if (cmd === 'mail') A.compose(); else A.display(); });
       }
     });
@@ -158,9 +191,10 @@
     $('#startmenu').addEventListener('click', e => {
       const b = e.target.closest('[data-sm]'); if (!b) return;
       if (b.dataset.sm !== 'all') { startAction(b.dataset.sm); return; }
+      if (session === 'guest') return;
       const r = b.getBoundingClientRect();
-      X.showDrop([{ id: 'p-ex', label: 'Explorateur' }, { id: 'p-np', label: 'Bloc-notes' }, { id: 'p-wp', label: 'Traitement de texte' }, { id: 'p-mail', label: 'Messagerie' }, { sep: true }, { id: 'p-golf', label: 'Mini-golf' }, { sep: true }, { id: 'p-disp', label: 'Propriétés d’affichage' }],
-        r.right - 2, r.top, cmd => { toggleStart(false); ({ 'p-ex': () => A.explorer('docs'), 'p-np': () => A.open('lisezmoi'), 'p-wp': () => A.open('cvdoc'), 'p-mail': () => A.compose(), 'p-golf': () => A.minigolf(), 'p-disp': () => A.display() })[cmd](); },
+      X.showDrop([{ id: 'p-ex', label: 'Explorateur' }, { id: 'p-np', label: 'Bloc-notes' }, { id: 'p-wp', label: 'Traitement de texte' }, { id: 'p-mail', label: 'Messagerie' }, { sep: true }, { id: 'p-golf', label: 'Mini-golf' }, { id: 'p-mines', label: 'Démineur' }, { id: 'p-pb', label: 'Flipper' }, { sep: true }, { id: 'p-disp', label: 'Propriétés d’affichage' }],
+        r.right - 2, r.top, cmd => { toggleStart(false); ({ 'p-ex': () => A.explorer('docs'), 'p-np': () => A.open('lisezmoi'), 'p-wp': () => A.open('cvdoc'), 'p-mail': () => A.compose(), 'p-golf': () => A.minigolf(), 'p-mines': () => A.mines(), 'p-pb': () => A.flipper(), 'p-disp': () => A.display() })[cmd](); },
         { above: r.bottom, focus: e.detail === 0, opener: b });
     });
     $('#startmenu').addEventListener('keydown', e => {
@@ -175,21 +209,26 @@
     addEventListener('sfxchange', trayIcons);
     addEventListener('keydown', e => {
       if (e.key === 'Escape' && !$('#startmenu').hidden) { toggleStart(false); $('#start-btn').focus(); return; }
-      if (!logged && (e.key === 'Enter' || e.key === ' ') && document.activeElement !== $('#welcome-user')) { e.preventDefault(); login(); }
+      if (!logged && (e.key === 'Enter' || e.key === ' ') && !document.activeElement.closest('.welcome-user')) { e.preventDefault(); login('arthur'); }
     });
     addEventListener('hashchange', () => { if (logged) route(); });
     const unlock = () => Sfx.unlock();
     addEventListener('pointerdown', unlock, { once: true }); addEventListener('keydown', unlock, { once: true });
-    $('#welcome-user').addEventListener('click', login);
-    $('#welcome').addEventListener('click', e => { if (!e.target.closest('#welcome-user')) login(); });
+    $('#welcome-user').addEventListener('click', () => login('arthur'));
+    $('#welcome-guest').addEventListener('click', () => login('guest'));
+    $('#welcome-guest-pic').innerHTML = I('guestpic');
+    $('#welcome').addEventListener('click', e => { if (!e.target.closest('.welcome-user')) login('arthur'); });
     WM.on('open', () => { if (X.small()) balloon(false); });
     WM.on('open', W => { if (W.id === 'minigolf') balloon(false); });
     Files.ready.push(() => { buildIcons(); buildStart(); });
     X.detect();
-    let seen = false; try { seen = sessionStorage.getItem('ac.session') === '1'; } catch (e) { /* ignoré */ }
-    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (seen || reduce || (location.hash && location.hash.length > 1)) login();
-    else setTimeout(() => { if (!logged) login(); }, 2600);
+    let seen = null; try { seen = sessionStorage.getItem('ac.session'); } catch (e) { /* ignoré */ }
+    if (seen === 'guest') { login('guest'); return; }
+    seen = seen === '1' || seen === 'arthur';
+    // Ouverture automatique seulement au retour dans la même session ou via un lien direct (#cv, #minigolf…).
+    // Sinon, on attend le clic : c'est aussi ce qui permet au son de démarrage de se jouer.
+    if (seen || (location.hash && location.hash.length > 1)) login('arthur');
+    else setTimeout(() => { if (!logged) $('#welcome').classList.add('is-hint'); }, 4000);
   }
 
   window.App = { WM, open: A.open, apps: A, toast };
