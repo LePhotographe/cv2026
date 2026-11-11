@@ -1015,6 +1015,11 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
       '<path d="M17 11.5l4 .5 2 6-2.8 2.2a17 17 0 0 0 8.6 8.6l2.2-2.8 6 2 .5 4c.1 1.6-1.1 3-2.7 3C22 35 13 26 13 14.2c0-1.6 1.4-2.8 3-2.7z" fill="#fff" stroke="#0d2f73" stroke-width="1.2" stroke-linejoin="round"/>',
     folder: u => '<defs><linearGradient id="a' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9d778"/><stop offset="1" stop-color="#dba32d"/></linearGradient><linearGradient id="b' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#ffd760"/><stop offset="1" stop-color="#f0b73a"/></linearGradient></defs>' +
       '<path d="M5 9h13l4 4h20a2 2 0 0 1 2 2v25H5z" fill="url(#a' + u + ')" stroke="#a5761b" stroke-width="1.1"/><path d="M3 17h42l-2.6 24.2H5.6z" fill="url(#b' + u + ')" stroke="#a5761b" stroke-width="1.1" stroke-linejoin="round"/><path d="M4.4 18.6h39.2" stroke="#fff" stroke-opacity=".75"/>',
+    folderFull: u => '<defs><linearGradient id="a' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9d778"/><stop offset="1" stop-color="#dba32d"/></linearGradient><linearGradient id="b' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#ffd760"/><stop offset="1" stop-color="#f0b73a"/></linearGradient></defs>' +
+      '<path d="M5 9h13l4 4h20a2 2 0 0 1 2 2v25H5z" fill="url(#a' + u + ')" stroke="#a5761b" stroke-width="1.1"/>' +
+      '<path d="M9.5 9.5 27 7.6l2.4 21-17.5 1.9z" fill="#f4f6f8" stroke="#8d969e"/><path d="M13 13.4l11-1.2M13.4 16.8l11-1.2" stroke="#9aa6b2" stroke-width="1.3"/>' +
+      '<path d="M19 5.5h15l5 5V29H19z" fill="#fff" stroke="#8d969e"/><path d="M34 5.5v5h5" fill="#e3e7eb" stroke="#8d969e"/><path d="M22.5 12h9M22.5 15.5h13" stroke="#7aa0d8" stroke-width="1.4"/>' +
+      '<path d="M3 19h42l-2.6 22.2H5.6z" fill="url(#b' + u + ')" stroke="#a5761b" stroke-width="1.1" stroke-linejoin="round"/><path d="M4.4 20.6h39.2" stroke="#fff" stroke-opacity=".75"/>',
     folderOpen: u => '<defs><linearGradient id="a' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9d778"/><stop offset="1" stop-color="#dba32d"/></linearGradient><linearGradient id="b' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset="1" stop-color="#f0b73a"/></linearGradient></defs>' +
       '<path d="M4 9h13l4 4h19a2 2 0 0 1 2 2v6H4z" fill="url(#a' + u + ')" stroke="#a5761b" stroke-width="1.1"/><path d="M9 14h26v15H9z" fill="#fff" stroke="#9aa3ab"/><path d="M4 41 9 22h37l-5 19z" fill="url(#b' + u + ')" stroke="#a5761b" stroke-width="1.1" stroke-linejoin="round"/>',
     mydocs: u => '<defs><linearGradient id="a' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9d778"/><stop offset="1" stop-color="#dba32d"/></linearGradient><linearGradient id="b' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#ffd760"/><stop offset="1" stop-color="#f0b73a"/></linearGradient></defs>' +
@@ -1310,7 +1315,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   }
   const kb = b => Math.max(1, Math.round(b / 1024)).toLocaleString('fr-FR') + ' Ko';
   const size = n => (n.type === 'folder' ? '' : kb(bytes(n)));
-  function iconOf(n) { return n.icon || (n.type === 'folder' ? 'folder' : n.type); }
+  function iconOf(n) { return n.icon || (n.type === 'folder' ? ((n.children || []).length ? 'folderFull' : 'folder') : n.type); }
 
   root.FS = { files, path, size, bytes, kb, TYPES, iconOf, get: id => files[id] };
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -3343,9 +3348,9 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   const ICONS = () => [
     { id: 'profil', label: 'Mon profil', icon: 'profile', tip: 'Qui je suis, en un coup d’œil', run: () => A.profile() },
     { id: 'docs', label: 'Mes documents', icon: 'mydocs', tip: 'Tous mes fichiers', node: 'docs', run: () => A.explorer('docs') },
-    { id: 'exp', label: 'Mes expériences', icon: 'folder', tip: 'Un dossier par entreprise, un fichier par poste', node: 'exp', run: () => A.explorer('exp') },
-    { id: 'comp', label: 'Compétences', icon: 'folder', tip: 'Ce que je sais faire, et où je l’ai fait', node: 'comp', run: () => A.explorer('comp') },
-    { id: 'form', label: 'Formation', icon: 'folder', tip: 'Diplômes et titres', node: 'form', run: () => A.explorer('form') },
+    { id: 'exp', label: 'Mes expériences', icon: 'folderFull', tip: 'Un dossier par entreprise, un fichier par poste', node: 'exp', run: () => A.explorer('exp') },
+    { id: 'comp', label: 'Compétences', icon: 'folderFull', tip: 'Ce que je sais faire, et où je l’ai fait', node: 'comp', run: () => A.explorer('comp') },
+    { id: 'form', label: 'Formation', icon: 'folderFull', tip: 'Diplômes et titres', node: 'form', run: () => A.explorer('form') },
     { id: 'lisezmoi', label: 'LISEZMOI.txt', icon: 'txt', tip: 'Le mode d’emploi de ce bureau', node: 'lisezmoi', run: () => A.open('lisezmoi') },
     { id: 'cvdoc', label: 'CV Arthur Chauvineau.doc', icon: 'doc', tip: 'Mon CV complet', node: 'cvdoc', run: () => A.open('cvdoc') },
     Files.pdf === 'ok' ? { id: 'cvpdf', label: 'CV Arthur Chauvineau.pdf', icon: 'pdf', tip: 'La version imprimable', node: 'cvpdf', run: () => A.open('cvpdf') } : null,
@@ -3387,7 +3392,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
     if (session === 'guest') return buildGuestStart();
     const left = [['profil', 'profile', 'Mon profil', 'Qui je suis'], ['mail', 'compose', 'Écrire à Arthur', 'Un message prêt à envoyer'], 'hr',
       ['lisezmoi', 'txt', 'LISEZMOI.txt'], ['cvdoc', 'doc', 'CV Arthur Chauvineau.doc'], ['minigolf', 'minigolf', 'Mini-golf']];
-    const right = [['docs', 'mydocs', 'Mes documents'], ['exp', 'folder', 'Mes expériences'], ['comp', 'folder', 'Compétences'], ['form', 'folder', 'Formation'], 'hr',
+    const right = [['docs', 'mydocs', 'Mes documents'], ['exp', 'folderFull', 'Mes expériences'], ['comp', 'folderFull', 'Compétences'], ['form', 'folderFull', 'Formation'], 'hr',
       Files.pdf === 'ok' ? ['cvpdf', 'pdf', 'CV en PDF'] : null, ['copy-mail', 'mail', 'Copier l’e-mail'], ['copy-tel', 'phone', 'Copier le téléphone'], 'hr',
       ['display', 'monitor', 'Affichage'], ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons'], ['help', 'help', 'Aide']].filter(Boolean);
     const item = ([id, ic, l, s]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + '" type="button" role="menuitem" data-sm="' + id + '">' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
@@ -3398,7 +3403,7 @@ html.is-crt .crt-stand { display: block; width: 420px; height: 46px; margin-top:
   function buildGuestStart() {
     const item = ([id, ic, l, s, off]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + (off ? ' is-off' : '') + '" type="button" role="menuitem" data-sm="' + id + '"' + (off ? ' title="Réservé à la session d’Arthur"' : '') + '>' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
     const left = [['minigolf', 'minigolf', 'Mini-golf', '18 trous'], ['mines', 'mines', 'Démineur', 'Le grand classique'], ['flipper', 'flipper', 'Flipper', 'Version golf'], 'hr', ['guest', 'txt', 'LISEZMOI.txt'], ['mail', 'compose', 'Écrire à Arthur']];
-    const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folder', 'Mes expériences', 0, 1], ['locked', 'folder', 'Compétences', 0, 1], ['locked', 'folder', 'Formation', 0, 1], 'hr',
+    const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folderFull', 'Mes expériences', 0, 1], ['locked', 'folderFull', 'Compétences', 0, 1], ['locked', 'folderFull', 'Formation', 0, 1], 'hr',
       ['locked', 'doc', 'CV Arthur Chauvineau', 0, 1], 'hr', ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons']];
     $('#startmenu').innerHTML = '<div class="sm-head"><span class="pic">' + I('guestpic') + '</span><div>Invité<small>Session limitée aux jeux</small></div></div><div class="sm-cols"><div class="sm-left">' +
       left.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') + '</div><div class="sm-right">' + right.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') +

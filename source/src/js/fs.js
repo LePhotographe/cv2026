@@ -141,7 +141,7 @@
   }
   const kb = b => Math.max(1, Math.round(b / 1024)).toLocaleString('fr-FR') + ' Ko';
   const size = n => (n.type === 'folder' ? '' : kb(bytes(n)));
-  function iconOf(n) { return n.icon || (n.type === 'folder' ? 'folder' : n.type); }
+  function iconOf(n) { return n.icon || (n.type === 'folder' ? ((n.children || []).length ? 'folderFull' : 'folder') : n.type); }
 
   root.FS = { files, path, size, bytes, kb, TYPES, iconOf, get: id => files[id] };
 })(typeof window !== 'undefined' ? window : globalThis);

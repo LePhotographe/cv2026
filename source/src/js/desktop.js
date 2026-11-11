@@ -9,9 +9,9 @@
   const ICONS = () => [
     { id: 'profil', label: 'Mon profil', icon: 'profile', tip: 'Qui je suis, en un coup d’œil', run: () => A.profile() },
     { id: 'docs', label: 'Mes documents', icon: 'mydocs', tip: 'Tous mes fichiers', node: 'docs', run: () => A.explorer('docs') },
-    { id: 'exp', label: 'Mes expériences', icon: 'folder', tip: 'Un dossier par entreprise, un fichier par poste', node: 'exp', run: () => A.explorer('exp') },
-    { id: 'comp', label: 'Compétences', icon: 'folder', tip: 'Ce que je sais faire, et où je l’ai fait', node: 'comp', run: () => A.explorer('comp') },
-    { id: 'form', label: 'Formation', icon: 'folder', tip: 'Diplômes et titres', node: 'form', run: () => A.explorer('form') },
+    { id: 'exp', label: 'Mes expériences', icon: 'folderFull', tip: 'Un dossier par entreprise, un fichier par poste', node: 'exp', run: () => A.explorer('exp') },
+    { id: 'comp', label: 'Compétences', icon: 'folderFull', tip: 'Ce que je sais faire, et où je l’ai fait', node: 'comp', run: () => A.explorer('comp') },
+    { id: 'form', label: 'Formation', icon: 'folderFull', tip: 'Diplômes et titres', node: 'form', run: () => A.explorer('form') },
     { id: 'lisezmoi', label: 'LISEZMOI.txt', icon: 'txt', tip: 'Le mode d’emploi de ce bureau', node: 'lisezmoi', run: () => A.open('lisezmoi') },
     { id: 'cvdoc', label: 'CV Arthur Chauvineau.doc', icon: 'doc', tip: 'Mon CV complet', node: 'cvdoc', run: () => A.open('cvdoc') },
     Files.pdf === 'ok' ? { id: 'cvpdf', label: 'CV Arthur Chauvineau.pdf', icon: 'pdf', tip: 'La version imprimable', node: 'cvpdf', run: () => A.open('cvpdf') } : null,
@@ -53,7 +53,7 @@
     if (session === 'guest') return buildGuestStart();
     const left = [['profil', 'profile', 'Mon profil', 'Qui je suis'], ['mail', 'compose', 'Écrire à Arthur', 'Un message prêt à envoyer'], 'hr',
       ['lisezmoi', 'txt', 'LISEZMOI.txt'], ['cvdoc', 'doc', 'CV Arthur Chauvineau.doc'], ['minigolf', 'minigolf', 'Mini-golf']];
-    const right = [['docs', 'mydocs', 'Mes documents'], ['exp', 'folder', 'Mes expériences'], ['comp', 'folder', 'Compétences'], ['form', 'folder', 'Formation'], 'hr',
+    const right = [['docs', 'mydocs', 'Mes documents'], ['exp', 'folderFull', 'Mes expériences'], ['comp', 'folderFull', 'Compétences'], ['form', 'folderFull', 'Formation'], 'hr',
       Files.pdf === 'ok' ? ['cvpdf', 'pdf', 'CV en PDF'] : null, ['copy-mail', 'mail', 'Copier l’e-mail'], ['copy-tel', 'phone', 'Copier le téléphone'], 'hr',
       ['display', 'monitor', 'Affichage'], ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons'], ['help', 'help', 'Aide']].filter(Boolean);
     const item = ([id, ic, l, s]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + '" type="button" role="menuitem" data-sm="' + id + '">' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
@@ -64,7 +64,7 @@
   function buildGuestStart() {
     const item = ([id, ic, l, s, off]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + (off ? ' is-off' : '') + '" type="button" role="menuitem" data-sm="' + id + '"' + (off ? ' title="Réservé à la session d’Arthur"' : '') + '>' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
     const left = [['minigolf', 'minigolf', 'Mini-golf', '18 trous'], ['mines', 'mines', 'Démineur', 'Le grand classique'], ['flipper', 'flipper', 'Flipper', 'Version golf'], 'hr', ['guest', 'txt', 'LISEZMOI.txt'], ['mail', 'compose', 'Écrire à Arthur']];
-    const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folder', 'Mes expériences', 0, 1], ['locked', 'folder', 'Compétences', 0, 1], ['locked', 'folder', 'Formation', 0, 1], 'hr',
+    const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folderFull', 'Mes expériences', 0, 1], ['locked', 'folderFull', 'Compétences', 0, 1], ['locked', 'folderFull', 'Formation', 0, 1], 'hr',
       ['locked', 'doc', 'CV Arthur Chauvineau', 0, 1], 'hr', ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons']];
     $('#startmenu').innerHTML = '<div class="sm-head"><span class="pic">' + I('guestpic') + '</span><div>Invité<small>Session limitée aux jeux</small></div></div><div class="sm-cols"><div class="sm-left">' +
       left.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') + '</div><div class="sm-right">' + right.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') +
