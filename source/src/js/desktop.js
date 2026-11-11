@@ -29,11 +29,13 @@
     { id: 'flipper', label: 'Flipper', icon: 'flipper', tip: 'Flipper Green, version golf', run: () => A.flipper() }
   ];
   const icons = () => (session === 'guest' ? GUEST() : ICONS());
+  const GUEST_MAIL = { subject: 'Débloquer toutes les fonctionnalités', body: 'Bonjour Arthur,\n\nJ’ai joué dans la session invité de votre bureau, et j’aimerais en débloquer toutes les fonctionnalités.\n\nPouvons-nous en parler ?\n\nBien cordialement,\n[Prénom Nom]' };
+  const writeArthur = () => A.compose(session === 'guest' ? GUEST_MAIL : undefined);
   function locked() {
     X.msg({ id: 'locked', title: 'Accès restreint', icon: 'error', w: 400,
       html: '<p>' + T('La session invité ne donne accès qu’aux jeux.') + '</p><p><b>' + T('Pour débloquer toutes les fonctionnalités, merci de contacter Arthur Chauvineau.') + '</b></p>',
-      buttons: [{ id: 'switch', label: 'Ouvrir la session d’Arthur' }, { id: 'ok', label: 'OK', def: true }],
-      onButton: b => { if (b === 'switch') setTimeout(() => { logoff(); login('arthur'); }, 50); } });
+      buttons: [{ id: 'mail', label: 'Écrire à Arthur', def: true }, { id: 'switch', label: 'Ouvrir la session d’Arthur' }, { id: 'ok', label: 'OK' }],
+      onButton: b => { if (b === 'switch') setTimeout(() => { logoff(); login('arthur'); }, 50); else if (b === 'mail') setTimeout(writeArthur, 0); } });
   }
   const iconBtn = i => '<button class="dico" type="button" data-icon="' + i.id + '" title="' + esc(X.fr(i.tip)) + '">' + ico(i.icon) + '<span>' + T(i.label) + '</span></button>';
   function buildIcons() {
@@ -61,9 +63,9 @@
   }
   function buildGuestStart() {
     const item = ([id, ic, l, s, off]) => '<button class="sm-item' + (s ? ' sm-item--pin' : '') + (off ? ' is-off' : '') + '" type="button" role="menuitem" data-sm="' + id + '"' + (off ? ' title="Réservé à la session d’Arthur"' : '') + '>' + ico(ic) + '<span>' + (s ? '<b>' + T(l) + '</b><small>' + T(s) + '</small>' : T(l)) + '</span></button>';
-    const left = [['minigolf', 'minigolf', 'Mini-golf', '18 trous'], ['mines', 'mines', 'Démineur', 'Le grand classique'], ['flipper', 'flipper', 'Flipper', 'Version golf'], 'hr', ['guest', 'txt', 'LISEZMOI.txt']];
+    const left = [['minigolf', 'minigolf', 'Mini-golf', '18 trous'], ['mines', 'mines', 'Démineur', 'Le grand classique'], ['flipper', 'flipper', 'Flipper', 'Version golf'], 'hr', ['guest', 'txt', 'LISEZMOI.txt'], ['mail', 'compose', 'Écrire à Arthur']];
     const right = [['locked', 'mydocs', 'Mes documents', 0, 1], ['locked', 'folder', 'Mes expériences', 0, 1], ['locked', 'folder', 'Compétences', 0, 1], ['locked', 'folder', 'Formation', 0, 1], 'hr',
-      ['locked', 'doc', 'CV Arthur Chauvineau', 0, 1], ['locked', 'compose', 'Écrire à Arthur', 0, 1], 'hr', ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons']];
+      ['locked', 'doc', 'CV Arthur Chauvineau', 0, 1], 'hr', ['sound', Sfx.enabled ? 'speaker2' : 'mute2', Sfx.enabled ? 'Couper les sons' : 'Activer les sons']];
     $('#startmenu').innerHTML = '<div class="sm-head"><span class="pic">' + I('guestpic') + '</span><div>Invité<small>Session limitée aux jeux</small></div></div><div class="sm-cols"><div class="sm-left">' +
       left.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') + '</div><div class="sm-right">' + right.map(x => (x === 'hr' ? '<div class="sm-hr"></div>' : item(x))).join('') +
       '</div></div><div class="sm-foot"><button type="button" role="menuitem" data-sm="logoff">' + I('logoff') + 'Fermer la session</button></div>';
@@ -78,7 +80,7 @@
   function startAction(id) {
     toggleStart(false);
     const map = {
-      profil: () => A.profile(), mail: () => A.compose(), minigolf: () => A.minigolf(), display: () => A.display(), help: () => A.open('lisezmoi'),
+      profil: () => A.profile(), mail: writeArthur, minigolf: () => A.minigolf(), display: () => A.display(), help: () => A.open('lisezmoi'),
       'copy-mail': () => copyText(P.email, null, 'Adresse'), 'copy-tel': () => copyText(P.phone, null, 'Numéro'), sound: toggleSound, logoff,
       mines: () => A.mines(), flipper: () => A.flipper(), guest: () => A.open('guest'), locked
     };
@@ -183,8 +185,8 @@
         X.contextMenu(e, [{ id: 'open', label: 'Ouvrir', bold: true }, { sep: true }, { id: 'props', label: 'Propriétés', disabled: !(it.node || it.id === 'profil') }],
           cmd => { if (cmd === 'open') runIcon(it.id); else if (it.id === 'profil') A.profile(); else A.fileProps(it.node); });
       } else {
-        X.contextMenu(e, [{ id: 'refresh', label: 'Actualiser' }, { sep: true }, session === 'guest' ? { id: 'lock', label: 'Écrire à Arthur', disabled: true } : { id: 'mail', label: 'Écrire à Arthur' }, { sep: true }, { id: 'props', label: 'Propriétés' }],
-          cmd => { if (cmd === 'refresh') refresh(); else if (cmd === 'mail') A.compose(); else A.display(); });
+        X.contextMenu(e, [{ id: 'refresh', label: 'Actualiser' }, { sep: true }, { id: 'mail', label: 'Écrire à Arthur' }, { sep: true }, { id: 'props', label: 'Propriétés' }],
+          cmd => { if (cmd === 'refresh') refresh(); else if (cmd === 'mail') writeArthur(); else A.display(); });
       }
     });
     $('#start-btn').addEventListener('click', e => { e.stopPropagation(); toggleStart(); });

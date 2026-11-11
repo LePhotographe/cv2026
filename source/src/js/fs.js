@@ -107,6 +107,7 @@
     "Cette session ne donne accès qu'aux jeux :", bullet('Mini-golf'), bullet('Démineur'), bullet('Flipper'), '',
     'Pour débloquer toutes les fonctionnalités, merci de contacter', 'Arthur Chauvineau.', '',
     'E-mail     : ' + P.email, 'Téléphone  : ' + P.phone, '',
+    wrap('Le plus simple : menu démarrer, « Écrire à Arthur ». Le message part directement, sans ouvrir votre messagerie.', 72, ''), '',
     wrap("Astuce : fermez la session depuis le menu démarrer et ouvrez celle d'Arthur. C'est gratuit, et sans mot de passe.", 72, ''), ''].join('\r\n');
   add('guest', { type: 'txt', name: 'LISEZMOI.txt', text: guest });
   add('cherche', { type: 'txt', name: 'Ce que je cherche.txt', text: cherche });

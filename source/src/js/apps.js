@@ -291,16 +291,20 @@
     const html = '<div class="oe"><div class="tbar"><button class="tb" type="button" data-o="send">' + I('compose') + '<span>Envoyer</span></button><span class="tsep"></span>' +
       '<button class="tb" type="button" data-o="copy">' + I('copy') + '<span>Copier le message</span></button><button class="tb" type="button" data-o="addr">' + I('mail') + '<span>Copier l’adresse</span></button></div>' +
       '<div class="oe-fields"><label for="oe-to">À :</label><div class="to"><input class="inp" id="oe-to" type="text" readonly value="' + esc(P.name + ' <' + P.email + '>') + '"></div>' +
+      '<label for="oe-name">De :</label><div class="oe-from"><input class="inp" id="oe-name" type="text" autocomplete="name" placeholder="Votre nom"><input class="inp" id="oe-mail" type="email" inputmode="email" autocomplete="email" placeholder="Votre e-mail, pour la réponse"></div>' +
       '<label for="oe-subj">Objet :</label><input class="inp" id="oe-subj" type="text"></div>' +
-      '<textarea class="oe-body" aria-label="Message"></textarea><div class="sbar"><span class="grow">' + T('« Envoyer » ouvre votre messagerie avec ce message prêt à partir.') + '</span></div></div>';
+      '<input class="oe-hp" type="checkbox" name="botcheck" tabindex="-1" aria-hidden="true" autocomplete="off">' +
+      '<textarea class="oe-body" aria-label="Message"></textarea><div class="sbar"><span class="grow">' + T('« Envoyer » transmet votre message directement à Arthur.') + '</span></div></div>';
     const W = WM.create(id, { title: DEFAULT_SUBJECT, icon: 'compose', w: 640, h: 500, hash: 'contact', html, minW: 300, minH: 260, focus: X.small() ? null : '.oe-body' });
-    const subj = $('#oe-subj', W.body), body = $('.oe-body', W.body);
+    const subj = $('#oe-subj', W.body), body = $('.oe-body', W.body), nameI = $('#oe-name', W.body), mailI = $('#oe-mail', W.body);
+    try { const f = JSON.parse(store.get('ac.mail.from', '{}')); nameI.value = f.name || ''; mailI.value = f.mail || ''; } catch (e) { /* ignoré */ }
     W.fill = p => { subj.value = p.subject || DEFAULT_SUBJECT; body.value = p.body || DEFAULT_BODY; WM.setTitle(id, subj.value || 'Nouveau message'); };
     W.fill(prefill || {});
     subj.addEventListener('input', () => WM.setTitle(id, subj.value.trim() || 'Nouveau message'));
     const copyMsg = () => copyText('À : ' + P.email + '\nObjet : ' + subj.value + '\n\n' + body.value, body, 'Message');
     const act = cmd => {
-      if (cmd === 'send') {
+      if (cmd === 'send') send();
+      else if (cmd === 'mailto') {
         X.openExternal(X.mailto(subj.value, body.value));
         msg({ title: 'Envoi du message', icon: 'info', w: 400, html: '<p>' + T('Votre messagerie devrait s’ouvrir avec ce message, prêt à partir.') + '</p><p>' + T('Si rien ne s’ouvre, copiez le message et envoyez-le à ') + '<b>' + T(P.email) + '</b>.</p>',
           buttons: [{ id: 'copy', label: 'Copier le message' }, { id: 'ok', label: 'OK', def: true }], onButton: b => { if (b === 'copy') copyMsg(); } });
@@ -312,11 +316,64 @@
       else if (cmd === 'about') about();
     };
     $('.oe', W.body).insertBefore(menubar([
-      { label: 'Fichier', items: [{ id: 'send', label: 'Envoyer le message' }, { sep: true }, { id: 'close', label: 'Fermer' }] },
+      { label: 'Fichier', items: [{ id: 'send', label: 'Envoyer le message' }, { id: 'mailto', label: 'Ouvrir dans ma messagerie' }, { sep: true }, { id: 'close', label: 'Fermer' }] },
       { label: 'Edition', items: [{ id: 'copy', label: 'Copier le message' }, { id: 'addr', label: 'Copier l’adresse' }, { sep: true }, { id: 'all', label: 'Sélectionner tout', key: 'Ctrl+A' }, { sep: true }, { id: 'reset', label: 'Rétablir le modèle' }] },
       { label: '?', items: [{ id: 'about', label: 'À propos du bureau d’Arthur' }] }
     ], act), $('.oe .tbar', W.body));
     W.body.addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (b) act(b.dataset.o); });
+
+    /* Envoi direct (Web3Forms), avec repli sur la messagerie du visiteur */
+    const warn = (el, text) => msg({ id: 'mail-warn', title: 'Message incomplet', icon: 'info', w: 380, html: '<p>' + T(text) + '</p>', onButton: () => setTimeout(() => { el.focus(); if (el.select) el.select(); }, 0) });
+    function send(force) {
+      const name = nameI.value.trim(), mail = mailI.value.trim(), s = subj.value.trim() || DEFAULT_SUBJECT;
+      if (!name) return warn(nameI, 'Indiquez votre nom, pour qu’Arthur sache qui lui écrit.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) return warn(mailI, 'Indiquez une adresse e-mail valide : c’est là qu’Arthur vous répondra.');
+      const text = body.value.replace('[Prénom Nom]', name).trim();
+      if (!text) return warn(body, 'Votre message est vide.');
+      if (!force && /\[[^\]\n]{2,40}\]/.test(text)) {
+        return msg({ id: 'mail-warn', title: 'Envoi du message', icon: 'help', w: 400, sound: false,
+          html: '<p>' + T('Le message contient encore « ' + text.match(/\[[^\]\n]{2,40}\]/)[0] + ' ». Voulez-vous l’envoyer tel quel ?') + '</p>',
+          buttons: [{ id: 'edit', label: 'Modifier', def: true }, { id: 'send', label: 'Envoyer quand même' }],
+          onButton: b => { if (b === 'send') setTimeout(() => send(true), 0); else setTimeout(() => body.focus(), 0); } });
+      }
+      const last = +store.get('ac.mail.last', '0') || 0;
+      if (Date.now() - last < 60000) return msg({ id: 'mail-warn', title: 'Envoi du message', icon: 'info', w: 380, html: '<p>' + T('Un message vient de partir. Patientez une minute avant d’en envoyer un autre.') + '</p>' });
+      store.set('ac.mail.from', JSON.stringify({ name, mail }));
+      const C = D.contact, guest = document.documentElement.classList.contains('is-guest');
+      const ctl = window.AbortController ? new AbortController() : null;
+      const P2 = WM.create('mail-send', { title: 'Envoi du message', icon: 'compose', dialog: true, top: true, notask: true, w: 380, ctrls: ['close'], onClose: () => { if (ctl && !done) ctl.abort(); },
+        html: '<div class="dlg"><div class="mx-anim">' + I('compose') + '<span class="mx-env">' + I('mail') + '</span>' + I('globe') + '</div><p class="mx-txt">' + T('Envoi du message à Arthur Chauvineau…') + '</p><div class="mx-bar"><i></i></div>' +
+          '<div class="dlg-btns"><button class="btn" type="button" data-b="cancel">Annuler</button></div></div>' });
+      P2.body.addEventListener('click', e => { if (e.target.closest('[data-b="cancel"]')) WM.close('mail-send'); });
+      let done = false;
+      const t0 = Date.now(), timer = setTimeout(() => { if (ctl) ctl.abort(); }, 15000);
+      const after = fn => setTimeout(fn, Math.max(0, 1100 - (Date.now() - t0)));
+      const ok = () => {
+        done = true; clearTimeout(timer); P2.el.classList.add('is-done');
+        after(() => {
+          WM.close('mail-send'); store.set('ac.mail.last', String(Date.now()));
+          WM.close(id); body.value = ''; 
+          msg({ id: 'mail-ok', title: 'Message envoyé', icon: 'info', w: 380, html: '<p><b>' + T('Votre message a bien été envoyé.') + '</b></p><p>' + T('Arthur vous répondra à ') + '<b>' + esc(mail) + '</b>. ' + T('Merci !') + '</p>' });
+        });
+      };
+      const fail = err => {
+        if (done) return; done = true; clearTimeout(timer);
+        if (!WM.get('mail-send')) return; // annulé par le visiteur
+        const why = err && err.name === 'AbortError' ? 'le serveur ne répond pas' : (navigator.onLine === false ? 'pas de connexion Internet' : 'le service d’envoi a refusé le message');
+        after(() => {
+          WM.close('mail-send');
+          msg({ id: 'mail-fail', title: 'Échec de l’envoi', icon: 'error', w: 420,
+            html: '<p>' + T('Le message n’a pas pu partir : ' + why + '.') + '</p><p>' + T('Vous pouvez l’envoyer depuis votre messagerie : il y sera déjà rédigé.') + '</p>',
+            buttons: [{ id: 'mailto', label: 'Ouvrir ma messagerie', def: true }, { id: 'copy', label: 'Copier le message' }, { id: 'close', label: 'Fermer' }],
+            onButton: b => { if (b === 'mailto') X.openExternal(X.mailto(s, text)); else if (b === 'copy') copyMsg(); } });
+        });
+      };
+      if ($('.oe-hp', W.body).checked) { ok(); return; } // robot : on fait comme si
+      fetch(C.endpoint, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, signal: ctl ? ctl.signal : undefined,
+        body: JSON.stringify({ access_key: C.key, subject: '[Site CV] ' + s, from_name: name + ' via le bureau d’Arthur', name, email: mail, message: text, session: guest ? 'Invité' : 'Arthur' })
+      }).then(r => r.json().catch(() => ({})).then(j => { if (!r.ok || !j.success) throw new Error(j.message || 'HTTP ' + r.status); ok(); })).catch(fail);
+    }
     return W;
   }
 

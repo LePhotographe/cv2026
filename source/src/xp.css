@@ -417,6 +417,22 @@ hr.xp { border: 0; border-top: 1px solid #aca899; border-bottom: 1px solid #fff;
 .pp-ed { border-bottom: 1px dotted transparent; }
 
 
+
+/* ---------- Messagerie : expéditeur et envoi ---------- */
+.oe-from { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 6px; min-width: 0; }
+.oe-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.mx-anim { position: relative; display: flex; justify-content: space-between; align-items: center; height: 46px; margin: 4px 18px 8px; }
+.mx-anim > .xi { width: 32px; height: 32px; }
+.mx-env { position: absolute; left: 34px; top: 4px; width: 24px; height: 24px; animation: mxFly 1.1s ease-in-out infinite; }
+.mx-env .xi { width: 24px; height: 24px; }
+@keyframes mxFly { 0% { transform: translate(0, 10px); opacity: 0; } 15% { opacity: 1; } 50% { transform: translate(130px, -6px); } 85% { opacity: 1; } 100% { transform: translate(260px, 10px); opacity: 0; } }
+.mx-txt { margin: 0 0 6px; }
+.mx-bar { height: 16px; padding: 2px; border: 1px solid #686868; border-radius: 3px; background: #fff; box-sizing: border-box; overflow: hidden; }
+.mx-bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, #2fb32f 0 8px, transparent 8px 10px); animation: mxBar 6s cubic-bezier(.15, .7, .3, 1) forwards; }
+.is-done .mx-bar i { width: 100% !important; animation: none; transition: width .3s; }
+@keyframes mxBar { to { width: 92%; } }
+@media (max-width: 720px) { .oe-from { grid-template-columns: minmax(0, 1fr); } }
+
 /* ---------- Session invité ---------- */
 .welcome-users { justify-self: start; display: grid; gap: 12px; }
 .welcome-pic { flex: none; width: 72px; height: 72px; border: 3px solid #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0, 0, 0, .35); }

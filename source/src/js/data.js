@@ -2,6 +2,8 @@
 (function (root) {
   const D = {};
 
+  // Envoi des messages du site : Web3Forms (la clé ne peut écrire qu'à Arthur, elle peut être publique)
+  D.contact = { endpoint: 'https://api.web3forms.com/submit', key: '72c97534-dc9c-4b10-89c8-7536cb7f6164' };
   D.person = {
     name: 'Arthur Chauvineau',
     headline: 'Expérience client · Transformation digitale',
