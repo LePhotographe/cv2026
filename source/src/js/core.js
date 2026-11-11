@@ -163,6 +163,7 @@
       if (active && active !== id) { const P = wins.get(active); if (P) { P.el.classList.remove('is-active'); if (P.onBlur) P.onBlur(); } }
       if (W.min) { W.min = false; W.el.classList.remove('is-min'); if (W.onRestore) W.onRestore(); }
       W.el.style.zIndex = (W.top ? 5000 : 0) + (++z); W.el.classList.add('is-active');
+      if (W.flash) { W.flash = null; clearTimeout(W.flashT); }
       const changed = active !== id; active = id;
       if (changed) { if (W.onFocus) W.onFocus(); setHash(W.hash); emit('focus', W); }
       renderTasks();
@@ -200,7 +201,7 @@
     function setHashFor(id, hash) { const W = wins.get(id); if (!W) return; W.hash = hash; if (active === id) setHash(hash); }
     function renderTasks() {
       const t = $('#tasks');
-      t.innerHTML = [...wins.values()].filter(W => !W.notask).map(W => '<button class="task' + (W.id === active && !W.min ? ' is-active' : '') + '" type="button" data-win="' + W.id + '" title="' + esc(fr(W.title)) + '">' + ico(W.icon) + '<span>' + T(W.title) + '</span></button>').join('');
+      t.innerHTML = [...wins.values()].filter(W => !W.notask).map(W => '<button class="task' + (W.id === active && !W.min ? ' is-active' : '') + (W.flash ? ' is-flash' + (W.flash === 'blink' ? ' is-blink' : '') : '') + '" type="button" data-win="' + W.id + '" title="' + esc(fr(W.title)) + '">' + ico(W.icon) + '<span>' + T(W.title) + '</span></button>').join('');
     }
     $('#tasks').addEventListener('click', e => {
       const b = e.target.closest('[data-win]'); if (!b) return;
@@ -217,7 +218,13 @@
         if (W.onResize) W.onResize();
       });
     });
-    return { create, focus, minimize, close, toggleMax, setTitle, setIcon, setHash: setHashFor, blurAll, get: id => wins.get(id), get active() { return active; }, all: () => [...wins.values()], on: (k, f) => hooks[k].push(f) };
+    // Comme sous XP : le bouton d'une fenêtre qui réclame l'attention clignote en orange, puis reste orange.
+    function flash(id) {
+      const W = wins.get(id); if (!W || active === id) return;
+      W.flash = 'blink'; renderTasks();
+      clearTimeout(W.flashT); W.flashT = setTimeout(() => { if (W.flash) { W.flash = 'steady'; renderTasks(); } }, 4200);
+    }
+    return { create, focus, minimize, flash, close, toggleMax, setTitle, setIcon, setHash: setHashFor, blurAll, get: id => wins.get(id), get active() { return active; }, all: () => [...wins.values()], on: (k, f) => hooks[k].push(f) };
   })();
 
   /* ---------- Menus déroulants et contextuels ---------- */

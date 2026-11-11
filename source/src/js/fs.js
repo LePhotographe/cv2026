@@ -5,7 +5,7 @@
   const h1 = t => t + '\r\n' + '='.repeat(t.length);
   const h2 = t => t + '\r\n' + '-'.repeat(t.length);
   function wrap(text, width, indent) {
-    const words = String(text).split(/\s+/), out = []; let line = '';
+    const words = String(text).split(/[ \t\r\n]+/), out = []; let line = '';
     words.forEach(w => { if ((line + (line ? ' ' : '') + w).length > width && line) { out.push(line); line = indent + w; } else line += (line && line !== indent ? ' ' : '') + w; });
     if (line) out.push(line);
     return out.join('\r\n');
@@ -108,7 +108,13 @@
   add('cvpdf', { type: 'pdf', name: 'CV Arthur Chauvineau.pdf', bytes: 927374 });
   add('vcf', { type: 'vcf', name: 'Arthur Chauvineau.vcf', bytes: 412 });
   add('docs', { type: 'folder', name: 'Mes documents', icon: 'mydocs', children: ['exp', 'comp', 'form', 'vcf', 'cherche', 'cvdoc', 'cvpdf', 'lisezmoi'], note: 'Tous les fichiers' });
-  add('trash', { type: 'folder', name: 'Corbeille', icon: 'trash', children: [], note: 'La Corbeille est vide.' });
+  const joke = [h1('RAISONS DE NE PAS ME RECRUTER'), '',
+    'Recherche en cours...', 'Analyse de 14 ans de parcours, 6 rôles, 4 structures...', '',
+    'Recherche terminée.', '', '0 élément trouvé.', '',
+    wrap("C'est pour ça que ce fichier a fini dans la Corbeille.", 72, ''), '',
+    wrap("PS : si vous en trouvez une malgré tout, je vous propose d'en discuter sur un parcours de golf. Vous risquez de changer d'avis vers le 9e trou\u00a0;-)", 72, ''), ''].join('\r\n');
+  const jokeId = add('trash/raisons', { type: 'txt', name: 'Raisons de ne pas me recruter.txt', text: joke });
+  add('trash', { type: 'folder', name: 'Corbeille', icon: 'trash', children: [jokeId], note: '1 élément supprimé' });
 
   // Parents et chemins
   Object.values(files).forEach(n => (n.children || []).forEach(c => { files[c].parent = n.id; }));

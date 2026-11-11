@@ -277,6 +277,9 @@ hr.xp { border: 0; border-top: 1px solid #aca899; border-bottom: 1px solid #fff;
   background: linear-gradient(180deg, #4790f6, #2d6fe6 50%, #2a69df); border: 1px solid rgba(0, 20, 90, .35); box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .3); }
 .task:hover { filter: brightness(1.08); }
 .task.is-active { background: #1d4cad; box-shadow: inset 1px 1px 4px rgba(0, 0, 0, .5); }
+.task.is-flash { background: linear-gradient(180deg, #ffc97a, #f7a43a 50%, #ec8f1f); border-color: rgba(120, 60, 0, .55); color: #fff; text-shadow: 0 1px 1px rgba(110, 50, 0, .6); }
+.task.is-blink { animation: taskFlash .7s steps(1, end) 6; }
+@keyframes taskFlash { 50% { background: linear-gradient(180deg, #4790f6, #2d6fe6 50%, #2a69df); border-color: rgba(0, 20, 90, .35); text-shadow: none; } }
 .task .xi, .task .pic { width: 16px; height: 16px; border-width: 1px; }
 .task span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tray { flex: none; display: flex; align-items: center; gap: 8px; padding: 0 max(12px, env(safe-area-inset-right, 0px)) 0 12px; color: #fff;
